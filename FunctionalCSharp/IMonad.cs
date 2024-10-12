@@ -10,9 +10,8 @@ namespace FunctionalCSharp
         // it cant be just monad<v> it must be same monad as monad<t>
         // Second problem: no pure/unit functions
         IMonad<V> Bind<V>(Func<T, IMonad<V>> binder);
-        }
-
     }
+    
 
     // try to define pure/unit funct using abstract class in order to define
     // some generic versions of map/apply in terms of bind
@@ -31,4 +30,4 @@ namespace FunctionalCSharp
     //    // unfortunately the same is true about apply method
     //    public abstract IApplicative<V> Apply<V>(IApplicative<Func<T, V>> fun);
     //}
-//}
+}

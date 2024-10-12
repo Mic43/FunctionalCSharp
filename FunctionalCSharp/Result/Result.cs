@@ -27,8 +27,9 @@ namespace FunctionalCSharp.Result
             return Bind(t => ResultHelper.Pure<V, TError>(mapper(t)));
         }
 
-        // now we need applicative paramater to be the same type as our instance (so it needs to be monad too)
-        // But the compiler cant check this at compile time, do we cant define apply in terms of bind
+        // now we need applicative parameter to be the same type as our instance (so it needs to be monad too)
+        // But the compiler cant check this at compile time, so,unfortunately, we cant define apply in terms of bind
+        // amd we must leave implementation empty
         public abstract IApplicative<V> Apply<V>(IApplicative<Func<T, V>> applicative);
         //{
 
@@ -38,7 +39,9 @@ namespace FunctionalCSharp.Result
         public abstract IMonad<V> Bind<V>(Func<T, IMonad<V>> binder);
 
     }
-
+    /// <summary>
+    /// Some helper functions for query comprehensions to work
+    /// </summary>
     public static class ResultExt
     {
         public static Result<Z, TError> SelectMany<T, V, Z, TError>(this Result<T, TError> f, Func<T, Result<V, TError>> binder,
