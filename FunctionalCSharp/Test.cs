@@ -21,10 +21,9 @@ namespace FunctionalCSharp
             var z = from c in m
                     select c;
 
-
-            
+            //Result<Result<int, string>, string> s;
+            //Monads.Join<int>(s);
 
         }
-
     }
 }
