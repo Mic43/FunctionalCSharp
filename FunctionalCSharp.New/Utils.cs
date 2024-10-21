@@ -4,4 +4,5 @@
     {
         public static Func<T, T> Id<T>() => a => a;
     }
+
 }
