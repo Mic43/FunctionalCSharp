@@ -3,7 +3,6 @@
 namespace FunctionalCSharp.New.Monads;
 
 public abstract record Result<T, TError> : IKind<Result<TError>, T>;
-
 public sealed record Ok<T, TError>(T ResultValue) : Result<T, TError>;
 public sealed record Error<T, TError>(TError ErrorValue) : Result<T, TError>;
 
