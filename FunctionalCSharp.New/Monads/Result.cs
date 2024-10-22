@@ -26,6 +26,8 @@ public sealed class Result<TError> : IMonad<Result<TError>>
             _ => throw new ArgumentOutOfRangeException(nameof(monad))
         };
     }
+    public static IKind<Result<TError>, T> Join<T>(IKind<Result<TError>, IKind<Result<TError>, T>> monad) 
+        => IMonad<Result<TError>>.Join(monad);
 
     public static IKind<Result<TError>, T> Pure<T>(T value)
     {

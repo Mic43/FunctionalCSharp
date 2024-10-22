@@ -36,7 +36,8 @@ namespace FunctionalCSharp.New.Monads
                 return prodResult.Run(env);
             });
         }
-
+        public static IKind<Reader<TEnv>, T> Join<T>(IKind<Reader<TEnv>, IKind<Reader<TEnv>, T>> monad)
+            => IMonad<Reader<TEnv>>.Join(monad);
         public static Reader<TEnv, TEnv> Ask<T>(Reader<TEnv, T> reader) => reader.Ask();
         public static Reader<TEnv, TEnvS> Asks<T, TEnvS>(Reader<TEnv, T> reader, Func<TEnv, TEnvS> f) => reader.Asks(f);
         public static Reader<TEnv, T> Local<T>(Reader<TEnv, T> reader, Func<TEnv, TEnv> modifyEnvFunc) =>
