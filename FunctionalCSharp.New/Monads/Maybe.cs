@@ -11,7 +11,7 @@
 
         public static IKind<Maybe, V> Bind<T, V>(IKind<Maybe, T> monad, Func<T, IKind<Maybe, V>> fun) => (Maybe<T>)monad switch
         {
-            None<T> n => new None<V>(),
+            None<T> _ => new None<V>(),
             Some<T> { Value: var v } => fun(v),
             _ => throw new ArgumentException(nameof(monad))
         };
