@@ -15,6 +15,11 @@ public sealed class Result<TError> : IMonad<Result<TError>>
     public static IKind<Result<TError>, V> Apply<T, V>(IKind<Result<TError>, T> applicative, IKind<Result<TError>, Func<T, V>> fun)
         => IMonad<Result<TError>>.Apply(applicative, fun);
 
+    public static IKind<Result<TError>, Z> Lift<T, V, Z>(Func<T, V, Z> operation, IKind<Result<TError>, T> app1,
+        IKind<Result<TError>, V> app2)
+    {
+        return IMonad<Result<TError>>.Lift(operation, app1, app2);
+    }
     public static IKind<Result<TError>, V> Bind<T, V>(IKind<Result<TError>, T> monad, Func<T, IKind<Result<TError>, V>> fun)
     {
         Result<T, TError> m = (Result<T, TError>)monad;
@@ -26,7 +31,7 @@ public sealed class Result<TError> : IMonad<Result<TError>>
             _ => throw new ArgumentOutOfRangeException(nameof(monad))
         };
     }
-    public static IKind<Result<TError>, T> Join<T>(IKind<Result<TError>, IKind<Result<TError>, T>> monad) 
+    public static IKind<Result<TError>, T> Join<T>(IKind<Result<TError>, IKind<Result<TError>, T>> monad)
         => IMonad<Result<TError>>.Join(monad);
 
     public static IKind<Result<TError>, T> Pure<T>(T value)

@@ -20,6 +20,11 @@ namespace FunctionalCSharp.New.Monads
         public static IKind<Reader<TEnv>, V> Apply<T, V>(IKind<Reader<TEnv>, T> applicative, IKind<Reader<TEnv>, Func<T, V>> fun)
             => IMonad<Reader<TEnv>>.Apply(applicative, fun);
 
+        public static IKind<Reader<TEnv>, Z> Lift<T, V, Z>(Func<T, V, Z> operation, IKind<Reader<TEnv>, T> app1,
+            IKind<Reader<TEnv>, V> app2)
+        {
+            return IMonad<Reader<TEnv>>.Lift(operation, app1, app2);
+        }
         public static IKind<Reader<TEnv>, V> Bind<T, V>(IKind<Reader<TEnv>, T> monad, Func<T, IKind<Reader<TEnv>, V>> fun)
         {
             var reader = monad.To();
@@ -32,7 +37,6 @@ namespace FunctionalCSharp.New.Monads
         }
         public static IKind<Reader<TEnv>, T> Join<T>(IKind<Reader<TEnv>, IKind<Reader<TEnv>, T>> monad)
             => IMonad<Reader<TEnv>>.Join(monad);
-
         public static Reader<TEnv, TEnv> Ask() => Asks(e => e);
         public static Reader<TEnv, TEnvS> Asks<TEnvS>(Func<TEnv, TEnvS> f) => new(f);
         public static Reader<TEnv, T> Local<T>(Reader<TEnv, T> reader, Func<TEnv, TEnv> modifyEnvFunc) =>
