@@ -9,21 +9,21 @@ public class ReaderTest
     [Fact]
     public void Tst()
     {
-        Reader<int, string> GetInit()
+        Reader<int, string> GetInit(string s)
         {
-            return Reader<int>.Pure("start").To();
+            return Reader<int>.Pure(s).To();
         }
 
         var reader =
-            from s in GetInit()
-            let r = GetInit()
+            from s in GetInit("start")
+            from s2 in GetInit(s + "1")
             from env in Reader<int>.Ask()
-            select new { Value = s + "2", Env = env + 1 };
+            select new { Value = s2 + "2", Env = env + 1 };
 
         var actual = reader.Run(1);
 
         Assert.Equal(2,actual.Env);
-        Assert.Equal("start2", actual.Value);
+        Assert.Equal("start12", actual.Value);
 
     }
 }
