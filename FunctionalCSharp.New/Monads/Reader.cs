@@ -10,8 +10,7 @@ namespace FunctionalCSharp.New.Monads
     {
         public T Run(TEnv env) => ReaderFunc(env);
 
-        public Reader<TEnv, TEnv> Ask() => (Reader<TEnv, TEnv>)
-            Asks(e => e);
+        public Reader<TEnv, TEnv> Ask() => Asks(e => e);
         public Reader<TEnv, TEnvS> Asks<TEnvS>(Func<TEnv, TEnvS> f) => (Reader<TEnv, TEnvS>)
             Reader<TEnv>.Bind(this, _ => new Reader<TEnv, TEnvS>(f));
 
@@ -28,7 +27,7 @@ namespace FunctionalCSharp.New.Monads
 
         public static IKind<Reader<TEnv>, V> Bind<T, V>(IKind<Reader<TEnv>, T> monad, Func<T, IKind<Reader<TEnv>, V>> fun)
         {
-            var reader = (Reader<TEnv, T>)monad;
+            var reader = monad.To();
             return new Reader<TEnv, V>(env =>
             {
                 var resT = reader.Run(env);
@@ -47,5 +46,25 @@ namespace FunctionalCSharp.New.Monads
             return new Reader<TEnv, T>(_ => value);
         }
         public static T Run<T>(Reader<TEnv, T> reader, TEnv env) => reader.Run(env);
+    }
+
+    /// <summary>
+    /// Some helper functions for query comprehensions to work
+    /// </summary>
+    public static class ReaderExt
+    {
+        public static Reader<TEnv, Z> SelectMany<T, V, Z, TEnv>(this Reader<TEnv, T> reader, Func<T, Reader<TEnv, V>> binder,
+            Func<T, V, Z> projection)
+        {
+            return Reader<TEnv>.Bind(reader, t => Reader<TEnv>.Bind(binder(t), v => Reader<TEnv>.Pure(projection(t, v)))).To();
+        }
+        public static Reader<TEnv, V> Select<T, V, TEnv>(this Reader<TEnv, T> reader, Func<T, V> mapper)
+        {
+            return Reader<TEnv>.Map(reader, mapper).To();
+        }
+        public static Reader<TEnv, T> To<TEnv, T>(this IKind<Reader<TEnv>, T> kind)
+        {
+            return (Reader<TEnv, T>)kind;
+        }
     }
 }

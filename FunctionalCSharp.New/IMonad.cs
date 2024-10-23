@@ -12,5 +12,7 @@
 
         public static abstract IKind<TMonad, T> Pure<T>(T value);
 
+
+
     }
 }
