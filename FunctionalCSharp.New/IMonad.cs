@@ -11,8 +11,5 @@
         public static abstract IKind<TMonad, V> Bind<T, V>(IKind<TMonad, T> monad, Func<T, IKind<TMonad, V>> fun);
 
         public static abstract IKind<TMonad, T> Pure<T>(T value);
-
-
-
     }
 }

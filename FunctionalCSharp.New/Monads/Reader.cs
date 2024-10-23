@@ -9,11 +9,6 @@ namespace FunctionalCSharp.New.Monads
     public record Reader<TEnv, T>(Func<TEnv, T> ReaderFunc) : IKind<Reader<TEnv>, T>
     {
         public T Run(TEnv env) => ReaderFunc(env);
-
-        public Reader<TEnv, TEnv> Ask() => Asks(e => e);
-        public Reader<TEnv, TEnvS> Asks<TEnvS>(Func<TEnv, TEnvS> f) => (Reader<TEnv, TEnvS>)
-            Reader<TEnv>.Bind(this, _ => new Reader<TEnv, TEnvS>(f));
-
         public Reader<TEnv, T> Local(Func<TEnv, TEnv> modifyEnvFunc) => new(env => ReaderFunc(modifyEnvFunc(env)));
     }
 
@@ -37,8 +32,9 @@ namespace FunctionalCSharp.New.Monads
         }
         public static IKind<Reader<TEnv>, T> Join<T>(IKind<Reader<TEnv>, IKind<Reader<TEnv>, T>> monad)
             => IMonad<Reader<TEnv>>.Join(monad);
-        public static Reader<TEnv, TEnv> Ask<T>(Reader<TEnv, T> reader) => reader.Ask();
-        public static Reader<TEnv, TEnvS> Asks<T, TEnvS>(Reader<TEnv, T> reader, Func<TEnv, TEnvS> f) => reader.Asks(f);
+
+        public static Reader<TEnv, TEnv> Ask() => Asks(e => e);
+        public static Reader<TEnv, TEnvS> Asks<TEnvS>(Func<TEnv, TEnvS> f) => new(f);
         public static Reader<TEnv, T> Local<T>(Reader<TEnv, T> reader, Func<TEnv, TEnv> modifyEnvFunc) =>
             reader.Local(modifyEnvFunc);
         public static IKind<Reader<TEnv>, T> Pure<T>(T value)

@@ -17,7 +17,7 @@ public class ReaderTest
         var reader =
             from s in GetInit()
             let r = GetInit()
-            from env in r.Ask()
+            from env in Reader<int>.Ask()
             select new { Value = s + "2", Env = env + 1 };
 
         var actual = reader.Run(1);
