@@ -38,6 +38,9 @@ public sealed class MaybeT<TMonad> : IMonadPlus<MaybeT<TMonad>> where TMonad : I
     }
 
     public static IKind<MaybeT<TMonad>, T> Empty<T>() => new MaybeT<TMonad, T>(TMonad.Pure(Maybe.Empty<T>().To()));
+
+    public static IKind<MaybeT<TMonad>, T> Lift<T>(IKind<TMonad, T> monad) =>
+        new MaybeT<TMonad, T>(TMonad.Map(monad, t => Maybe.Pure(t).To()));
 }
 
 public static class MaybeTExt
