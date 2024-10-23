@@ -28,6 +28,8 @@ namespace FunctionalCSharp.Tests
             
 
             Assert.Equal(mapper(initValue), ((Some<int>)res).Value);
+
+            // var pure = MaybeT<Reader<int>>.Pure("").To();
         }
     }
 }
