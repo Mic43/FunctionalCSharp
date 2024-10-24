@@ -67,5 +67,4 @@ public static class MaybeTExt
     {
         return (MaybeT<TMonad, T>)kind;
     }
-    
 }

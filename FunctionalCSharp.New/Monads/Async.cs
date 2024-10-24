@@ -17,9 +17,9 @@ public sealed class Async : IMonad<Async>
     public static IKind<Async, V> Apply<T, V>(IKind<Async, T> applicative, IKind<Async, Func<T, V>> fun)
         => IMonad<Async>.Apply(applicative, fun);
 
-    public static IKind<Async, Z> Lift<T, V, Z>(Func<T, V, Z> operation, IKind<Async, T> app1,
+    public static IKind<Async, Z> Lift2<T, V, Z>(Func<T, V, Z> operation, IKind<Async, T> app1,
         IKind<Async, V> app2) =>
-        IMonad<Async>.Lift(operation, app1, app2);
+        IMonad<Async>.Lift2(operation, app1, app2);
 
     public static IKind<Async, T> Join<T>(IKind<Async, IKind<Async, T>> monad) => IMonad<Async>.Join(monad);
 
