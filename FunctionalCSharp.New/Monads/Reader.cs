@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace FunctionalCSharp.New.Monads;
 
-public record Reader<TEnv, T>(Func<TEnv, T> ReaderFunc) : IKind<Reader<TEnv>, T>
+public sealed record Reader<TEnv, T>(Func<TEnv, T> ReaderFunc) : IKind<Reader<TEnv>, T>
 {
     public T Run(TEnv env) => ReaderFunc(env);
     public Reader<TEnv, T> Local(Func<TEnv, TEnv> modifyEnvFunc) => new(env => ReaderFunc(modifyEnvFunc(env)));
 }
 
-public class Reader<TEnv> : IMonad<Reader<TEnv>>
+public sealed class Reader<TEnv> : IMonad<Reader<TEnv>>
 {
     public static IKind<Reader<TEnv>, V> Map<T, V>(IKind<Reader<TEnv>, T> f, Func<T, V> fun)
         => IMonad<Reader<TEnv>>.Map(f, fun);
@@ -73,8 +73,5 @@ public static class ReaderExt
         return Reader<TEnv>.Map(reader, mapper).To();
     }
 
-    public static Reader<TEnv, T> To<TEnv, T>(this IKind<Reader<TEnv>, T> kind)
-    {
-        return (Reader<TEnv, T>)kind;
-    }
+    public static Reader<TEnv, T> To<TEnv, T>(this IKind<Reader<TEnv>, T> kind) => (Reader<TEnv, T>)kind;
 }
