@@ -2,7 +2,11 @@
 
 public abstract record Maybe<T> : IKind<Maybe, T>;
 public sealed record None<T> : Maybe<T>;
-public sealed record Some<T>(T Value) : Maybe<T>;
+
+public sealed record Some<T>(T Value) : Maybe<T>
+{
+    public static Some<T> Of(T value) => new(value);
+}
 
 public sealed class Maybe : IMonadPlus<Maybe>
 {

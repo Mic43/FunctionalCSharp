@@ -1,7 +1,10 @@
 ﻿namespace FunctionalCSharp.New.Monads;
 
 public sealed record MaybeT<TMonad, T>(IKind<TMonad, Maybe<T>> InnerMonad)
-    : IKind<MaybeT<TMonad>, T> where TMonad : IMonad<TMonad>;
+    : IKind<MaybeT<TMonad>, T> where TMonad : IMonad<TMonad>
+{
+    public static MaybeT<TMonad, T> Of(IKind<TMonad, Maybe<T>> innerMonad) => new(innerMonad);
+}
 
 public sealed class MaybeT<TMonad> : IMonadPlus<MaybeT<TMonad>> where TMonad : IMonad<TMonad>
 {
@@ -25,7 +28,8 @@ public sealed class MaybeT<TMonad> : IMonadPlus<MaybeT<TMonad>> where TMonad : I
         return new MaybeT<TMonad, V>(res);
     }
 
-    public static IKind<MaybeT<TMonad>, T> Pure<T>(T value) => new MaybeT<TMonad, T>(TMonad.Pure(Maybe.Pure(value).To()));
+    public static IKind<MaybeT<TMonad>, T> Pure<T>(T value) =>
+        new MaybeT<TMonad, T>(TMonad.Pure(Maybe.Pure(value).To()));
 
     public static IKind<MaybeT<TMonad>, T> Append<T, V>(IKind<MaybeT<TMonad>, T> a, IKind<MaybeT<TMonad>, T> b)
     {
@@ -45,17 +49,23 @@ public sealed class MaybeT<TMonad> : IMonadPlus<MaybeT<TMonad>> where TMonad : I
 
 public static class MaybeTExt
 {
-    // public static Maybe<Z> SelectMany<T, V, Z>(this Maybe<T> maybe, Func<T, Maybe<V>> binder,
-    //     Func<T, V, Z> projection)
-    // {
-    //     return Maybe.Bind(maybe, t => Maybe.Bind(binder(t), v => Maybe.Pure(projection(t, v)))).To();
-    // }
-    // public static Maybe<V> Select<T, V, TEnv>(this Maybe<T> maybe, Func<T, V> mapper)
-    // {
-    //     return Maybe.Map(maybe, mapper).To();
-    // }
+    public static MaybeT<TMonad, Z> SelectMany<T, V, Z, TMonad>(this MaybeT<TMonad, T> maybeT,
+        Func<T, MaybeT<TMonad, V>> binder,
+        Func<T, V, Z> projection) where TMonad : IMonad<TMonad>
+    {
+        return MaybeT<TMonad>
+            .Bind(maybeT, t => MaybeT<TMonad>.Bind(binder(t), v => MaybeT<TMonad>.Pure(projection(t, v)))).To();
+    }
+
+    public static MaybeT<TMonad, V> Select<T, V, TMonad>(this MaybeT<TMonad, T> maybeT, Func<T, V> mapper)
+        where TMonad : IMonad<TMonad>
+    {
+        return MaybeT<TMonad>.Map(maybeT, mapper).To();
+    }
+
     public static MaybeT<TMonad, T> To<T, TMonad>(this IKind<MaybeT<TMonad>, T> kind) where TMonad : IMonad<TMonad>
     {
         return (MaybeT<TMonad, T>)kind;
     }
+    
 }
