@@ -11,7 +11,7 @@ public class ReaderTest
     {
         Reader<int, string> GetInit(string s)
         {
-            return Reader<int>.Pure(s).To();
+            return Reader<int>.Pure(s);
         }
 
         var reader =
@@ -20,10 +20,9 @@ public class ReaderTest
             from env in Reader<int>.Ask()
             select new { Value = s2 + "2", Env = env + 1 };
 
-        var actual = reader.Run(1);
+        var actual = reader.RunReader(1);
 
-        Assert.Equal(2,actual.Env);
+        Assert.Equal(2, actual.Env);
         Assert.Equal("start12", actual.Value);
-
     }
 }

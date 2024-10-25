@@ -1,77 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace FunctionalCSharp.New.Monads;
 
-//TODO: define as ReaderT<Identity>
-public sealed record Reader<TEnv, T>(Func<TEnv, T> ReaderFunc) : IKind<Reader<TEnv>, T>
+public class Reader<TEnv>
 {
-    public T Run(TEnv env) => ReaderFunc(env);
-    public Reader<TEnv, T> Local(Func<TEnv, TEnv> modifyEnvFunc) => new(env => ReaderFunc(modifyEnvFunc(env)));
-}
+    public static Reader<TEnv, TEnv> Ask() => new(ReaderT<TEnv, Identity>.Ask());
 
-public sealed class Reader<TEnv> : IMonad<Reader<TEnv>>
-{
-    public static IKind<Reader<TEnv>, V> Map<T, V>(IKind<Reader<TEnv>, T> f, Func<T, V> fun)
-        => IMonad<Reader<TEnv>>.Map(f, fun);
-
-    public static IKind<Reader<TEnv>, V> Apply<T, V>(IKind<Reader<TEnv>, T> applicative,
-        IKind<Reader<TEnv>, Func<T, V>> fun)
-        => IMonad<Reader<TEnv>>.Apply(applicative, fun);
-
-    public static IKind<Reader<TEnv>, Z> Lift2<T, V, Z>(Func<T, V, Z> operation, IKind<Reader<TEnv>, T> app1,
-        IKind<Reader<TEnv>, V> app2)
-    {
-        return IMonad<Reader<TEnv>>.Lift2(operation, app1, app2);
-    }
-
-    public static IKind<Reader<TEnv>, V> Bind<T, V>(IKind<Reader<TEnv>, T> monad, Func<T, IKind<Reader<TEnv>, V>> fun)
-    {
-        var reader = monad.To();
-        return new Reader<TEnv, V>(env =>
-        {
-            var resT = reader.Run(env);
-            var prodResult = (Reader<TEnv, V>)fun(resT);
-            return prodResult.Run(env);
-        });
-    }
-
-    public static IKind<Reader<TEnv>, T> Join<T>(IKind<Reader<TEnv>, IKind<Reader<TEnv>, T>> monad)
-        => IMonad<Reader<TEnv>>.Join(monad);
-
-    public static Reader<TEnv, TEnv> Ask() => Asks(e => e);
-    public static Reader<TEnv, TEnvS> Asks<TEnvS>(Func<TEnv, TEnvS> f) => new(f);
+    public static Reader<TEnv, TEnvS> Asks<TEnvS>(Func<TEnv, TEnvS> f) => new(ReaderT<TEnv, Identity>.Asks(f));
 
     public static Reader<TEnv, T> Local<T>(Reader<TEnv, T> reader, Func<TEnv, TEnv> modifyEnvFunc) =>
-        reader.Local(modifyEnvFunc);
+        new(reader.Local(modifyEnvFunc));
 
-    public static IKind<Reader<TEnv>, T> Pure<T>(T value)
-    {
-        return new Reader<TEnv, T>(_ => value);
-    }
-
-    public static T Run<T>(Reader<TEnv, T> reader, TEnv env) => reader.Run(env);
+    public static Reader<TEnv, T> Pure<T>(T value) => new(ReaderT<TEnv, Identity>.Pure(value).To());
 }
 
-/// <summary>
-/// Some helper functions for query comprehensions to work
-/// </summary>
+public record Reader<TEnv, T> : ReaderT<TEnv, Identity, T>
+{
+    public Reader(Func<TEnv, T> runReader) : base(e => new Identity<T>(runReader(e)))
+    {
+    }
+
+    public Reader(ReaderT<TEnv, Identity, T> readerT) : base(readerT.RunReaderT)
+    {
+    }
+
+    public T RunReader(TEnv env) => RunReaderT(env).To().Value;
+}
+
 public static class ReaderExt
 {
     public static Reader<TEnv, Z> SelectMany<T, V, Z, TEnv>(this Reader<TEnv, T> reader,
         Func<T, Reader<TEnv, V>> binder,
         Func<T, V, Z> projection)
     {
-        return Reader<TEnv>.Bind(reader, t => Reader<TEnv>.Bind(binder(t), v => Reader<TEnv>.Pure(projection(t, v))))
-            .To();
+        return new Reader<TEnv, Z>(ReaderTExt.SelectMany(reader, binder, projection));
     }
 
     public static Reader<TEnv, V> Select<T, V, TEnv>(this Reader<TEnv, T> reader, Func<T, V> mapper)
     {
-        return Reader<TEnv>.Map(reader, mapper).To();
+        return new Reader<TEnv, V>(ReaderTExt.Select(reader, mapper));
     }
 
     public static Reader<TEnv, T> To<TEnv, T>(this IKind<Reader<TEnv>, T> kind) => (Reader<TEnv, T>)kind;

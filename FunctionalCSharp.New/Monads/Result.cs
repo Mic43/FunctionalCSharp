@@ -1,6 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
-
-namespace FunctionalCSharp.New.Monads;
+﻿namespace FunctionalCSharp.New.Monads;
 
 public abstract record Result<T, TError> : IKind<Result<TError>, T>;
 
