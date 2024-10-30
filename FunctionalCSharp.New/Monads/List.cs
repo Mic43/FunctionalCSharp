@@ -60,7 +60,7 @@ public class List : IMonadPlus<List>, ITraversable<List>
             TApplicative.Pure(Empty<V>()),
             (cur, acc) =>
                 IApplicative<TApplicative>.Lift2(Append<V, V>
-                    , acc, TApplicative.Map(cur, Pure)));
+                    , TApplicative.Map(cur, Pure), acc));
     }
 }
 
@@ -70,6 +70,7 @@ public static class ListExt
     {
         return (List<T>)list;
     }
+
     public static List<Z> SelectMany<T, V, Z>(this List<T> list, Func<T, List<V>> binder,
         Func<T, V, Z> projection)
     {

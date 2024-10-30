@@ -1,3 +1,3 @@
 ﻿namespace FunctionalCSharp.New;
 
-public interface IKind<F, A>;
+public interface IKind<F,A>;

@@ -1,6 +1,9 @@
 ﻿namespace FunctionalCSharp.New.Monads;
 
-public abstract record Maybe<T> : IKind<Maybe, T>;
+public abstract record Maybe<T> : IKind<Maybe, T>
+{
+    public static Maybe<T> None() => new None<T>();
+}
 
 public sealed record None<T> : Maybe<T>;
 
