@@ -44,11 +44,10 @@ public class List : IMonadPlus<List>, ITraversable<List>
         return new List<T>(Enumerable.Empty<T>());
     }
 
-    public static TResult FoldBack<T, TResult>(IKind<List, T> foldable, TResult identity,
-        Func<T, TResult, TResult> folder)
+    public static TResult Fold<T, TResult>(IKind<List, T> foldable, TResult identity,
+        Func<TResult, T, TResult> folder)
     {
-        //TODO: not efficient
-        return foldable.To().SourceList.Reverse().Aggregate(identity, (result, value) => folder(value, result));
+        return foldable.To().SourceList.Aggregate(identity, folder);
     }
 
     public static IKind<TApplicative, IKind<List, V>> Traverse<T, V, TApplicative>(
@@ -56,11 +55,11 @@ public class List : IMonadPlus<List>, ITraversable<List>
         Func<T, IKind<TApplicative, V>> action) where TApplicative : IApplicative<TApplicative>
     {
         var list = Map(traversable.To(), action).To();
-        return FoldBack(list,
+        return Fold(list,
             TApplicative.Pure(Empty<V>()),
-            (cur, acc) =>
-                IApplicative<TApplicative>.Lift2(Append<V, V>
-                    , TApplicative.Map(cur, Pure), acc));
+            (acc, cur) =>
+                IApplicative<TApplicative>.Lift2(Append<V, V>,
+                    acc, TApplicative.Map(cur, Pure)));
     }
 }
 
