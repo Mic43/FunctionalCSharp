@@ -1,4 +1,5 @@
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace FunctionalCSharp.New.Monads;
 
@@ -11,7 +12,7 @@ public record List<T>(IEnumerable<T> SourceList) : IKind<List, T>
     public IEnumerable<T> SourceList { get; } = SourceList;
 }
 
-public class List : IMonadPlus<List>, IFoldable<List>
+public class List : IMonadPlus<List>, ITraversable<List>
 {
     public static IKind<List, V> Map<T, V>(IKind<List, T> f, Func<T, V> fun)
     {
@@ -35,7 +36,7 @@ public class List : IMonadPlus<List>, IFoldable<List>
 
     public static IKind<List, T> Append<T, V>(IKind<List, T> a, IKind<List, T> b)
     {
-        return new List<T>(a.To().SourceList.Append<>(b.To().SourceList));
+        return new List<T>(a.To().SourceList.Union(b.To().SourceList));
     }
 
     public static IKind<List, T> Empty<T>()
@@ -43,20 +44,23 @@ public class List : IMonadPlus<List>, IFoldable<List>
         return new List<T>(Enumerable.Empty<T>());
     }
 
-    public static T Fold<T>(IKind<List, T> foldable) where T : IMonoid<T>
+    public static TResult FoldBack<T, TResult>(IKind<List, T> foldable, TResult identity,
+        Func<T, TResult, TResult> folder)
     {
-        return foldable.To().SourceList.Aggregate(T.Identity(), T.Combine);
+        //TODO: not efficient
+        return foldable.To().SourceList.Reverse().Aggregate(identity, (result, value) => folder(value, result));
     }
 
-    public static T FoldAdd<T>(IKind<List, T> foldable) where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T>
+    public static IKind<TApplicative, IKind<List, V>> Traverse<T, V, TApplicative>(
+        IKind<List, T> traversable,
+        Func<T, IKind<TApplicative, V>> action) where TApplicative : IApplicative<TApplicative>
     {
-        return foldable.To().SourceList.Aggregate(T.AdditiveIdentity, (acc, v) => acc + v);
-    }
-
-    public static T FoldMul<T>(IKind<List, T> foldable)
-        where T : IMultiplyOperators<T, T, T>, IMultiplicativeIdentity<T, T>
-    {
-        return foldable.To().SourceList.Aggregate(T.MultiplicativeIdentity, (acc, v) => acc * v);
+        var list = Map(traversable.To(), action).To();
+        return FoldBack(list,
+            TApplicative.Pure(Empty<V>()),
+            (cur, acc) =>
+                IApplicative<TApplicative>.Lift2(Append<V, V>
+                    , acc, TApplicative.Map(cur, Pure)));
     }
 }
 
@@ -66,7 +70,6 @@ public static class ListExt
     {
         return (List<T>)list;
     }
-
     public static List<Z> SelectMany<T, V, Z>(this List<T> list, Func<T, List<V>> binder,
         Func<T, V, Z> projection)
     {

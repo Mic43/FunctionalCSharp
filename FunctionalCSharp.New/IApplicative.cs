@@ -11,4 +11,6 @@ public interface IApplicative<TApplicative> : IFunctor<TApplicative> where TAppl
         var res = TApplicative.Map<T, Func<V, Z>>(app1, t => v => operation(t, v));
         return TApplicative.Apply(app2, res);
     }
+    
+    public static abstract IKind<TApplicative, T> Pure<T>(T value);
 }
