@@ -15,7 +15,7 @@ public class MaybeTTest
         Async<Maybe<int>> DoSthB(string input) =>
             Async<Maybe<int>>.FromResult(input.StartsWith("start") ? Some<int>.Of(1) : new None<int>());
 
-        Async<string> DoSthC(int input) => Async<string>.FromResult(input > 0 ? "OK" : "Error");
+        Async<string> DoSthC(int input) => Async<string>.FromResult(input > 0 ? "OK" : "ValidationError");
 
 
         var maybeT =

@@ -34,7 +34,7 @@ public sealed class Maybe : IMonadPlus<Maybe>
 
     public static IKind<Maybe, T> Pure<T>(T value) => new Some<T>(value);
 
-    public static IKind<Maybe, T> Append<T, V>(IKind<Maybe, T> a, IKind<Maybe, T> b) =>
+    public static IKind<Maybe, T> Append<T>(IKind<Maybe, T> a, IKind<Maybe, T> b) =>
         (a.To(), b.To()) switch
         {
             (None<T> _, None<T> _) => new None<T>(),

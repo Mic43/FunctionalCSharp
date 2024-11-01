@@ -31,7 +31,7 @@ public sealed class MaybeT<TMonad> : IMonadPlus<MaybeT<TMonad>> where TMonad : I
     public static IKind<MaybeT<TMonad>, T> Pure<T>(T value) =>
         new MaybeT<TMonad, T>(TMonad.Pure(Maybe.Pure(value).To()));
 
-    public static IKind<MaybeT<TMonad>, T> Append<T, V>(IKind<MaybeT<TMonad>, T> a, IKind<MaybeT<TMonad>, T> b)
+    public static IKind<MaybeT<TMonad>, T> Append<T>(IKind<MaybeT<TMonad>, T> a, IKind<MaybeT<TMonad>, T> b)
     {
         return new MaybeT<TMonad, T>(TMonad.Bind(a.To().InnerMonad, maybe => maybe switch
         {
