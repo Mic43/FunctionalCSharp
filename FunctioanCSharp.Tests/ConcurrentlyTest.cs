@@ -1,5 +1,7 @@
+using System.Linq;
 using System.Threading.Tasks;
 using FunctionalCSharp.New;
+using FunctionalCSharp.New.Monads;
 using Xunit;
 
 namespace FunctionalCSharp.Tests;
@@ -34,5 +36,21 @@ public class ConcurrentlyTest
             .To();
         string result = conc.Run();
         Assert.Equal("1 aaaa", result);
+    }
+
+    [Fact]
+    public void TraversableTest()
+    {
+        var init = new New.Monads.List<int>(new[] { 100, 200, 300 });
+
+        var concurrently = List.Traverse(init, delay => Concurrently.FromTask(ct =>
+        {
+            var t = Task.Delay(delay, ct);
+            t.Wait(ct);
+            return delay * 2;
+        })).To();
+
+        var result = concurrently.Run().To();
+        Assert.Equal(init.SourceList.Select(x => x * 2), result.SourceList);
     }
 }
