@@ -33,11 +33,14 @@ public class Free<TFunctor> : IMonad<Free<TFunctor>> where TFunctor : IFunctor<T
                 return new Roll<TFunctor, V>(TFunctor.Map(roll.Free, ff));
             }
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(monad));
         }
     }
 
     public static IKind<Free<TFunctor>, T> Pure<T>(T value) => new Pure<TFunctor, T>(value);
+
+    public static IKind<Free<TFunctor>, T> LiftF<T>(IKind<TFunctor, T> functor) =>
+        new Roll<TFunctor, T>(TFunctor.Map(functor, t => Pure(t).To()));
 }
 
 public static class FreeExt
@@ -45,6 +48,7 @@ public static class FreeExt
     public static Free<TFunctor, T> To<TFunctor, T>(this IKind<Free<TFunctor>, T> kind)
         where TFunctor : IFunctor<TFunctor> =>
         (Free<TFunctor, T>)kind;
+    
 
     public static Free<TFunctor, Z> SelectMany<TFunctor, T, V, Z>(this Free<TFunctor, T> free,
         Func<T, Free<TFunctor, V>> binder,
@@ -54,9 +58,9 @@ public static class FreeExt
             .Bind(free, t => Free<TFunctor>.Bind(binder(t), v => Free<TFunctor>.Pure(projection(t, v)))).To();
     }
 
-    public static Free<TFunctor, V> Select<TFunctor, T, V>(this Free<TFunctor, T> maybe, Func<T, V> mapper)
+    public static Free<TFunctor, V> Select<TFunctor, T, V>(this Free<TFunctor, T> free, Func<T, V> mapper)
         where TFunctor : IFunctor<TFunctor>
     {
-        return Free<TFunctor>.Map(maybe, mapper).To();
+        return Free<TFunctor>.Map(free, mapper).To();
     }
 }
