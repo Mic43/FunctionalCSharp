@@ -16,7 +16,9 @@ public class Tst
         var program =
             from r1 in Instructions.Add(a, b)
             from r2 in Instructions.Mul(r1, c)
-            from z in Instructions.If(() => r1 > r2,
+            from _ in Instructions.WriteLine<int>("Podaj liczbe")
+            from input in Instructions.ReadLine<int>()
+            from z in Instructions.If(() => r2 > input,
                 Instructions.Const(a),
                 Instructions.Const(b))
             select z;

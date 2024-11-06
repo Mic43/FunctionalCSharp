@@ -13,15 +13,23 @@ public class BasicInterpreter : IInterpreter
             case Pure<Instruction<T>, TOutput> pure:
                 return pure.Value;
             case Roll<Instruction<T>, TOutput> roll:
-                return (Instruction<T, Free<Instruction<T>, TOutput>>)roll.Free switch
+                switch ((Instruction<T, Free<Instruction<T>, TOutput>>)roll.Free)
                 {
-                    Add<T, Free<Instruction<T>, TOutput>> add => Interpret(add.Next(add.Arg1 + add.Arg2)),
-                    If<T, Free<Instruction<T>, TOutput>> @if => Interpret(@if.Condition()
-                        ? Interpret(@if.OnTrue)
-                        : Interpret(@if.OnFalse)),
-                    Mul<T, Free<Instruction<T>, TOutput>> mul => Interpret(mul.Next(mul.Arg1 * mul.Arg2)),
-                    _ => throw new ArgumentOutOfRangeException(nameof(program))
-                };
+                    case Add<T, Free<Instruction<T>, TOutput>> add:
+                        return Interpret(add.Next(add.Arg1 + add.Arg2));
+                    case If<T, Free<Instruction<T>, TOutput>> @if:
+                        return Interpret(@if.Condition() ? Interpret(@if.OnTrue) : Interpret(@if.OnFalse));
+                    case Mul<T, Free<Instruction<T>, TOutput>> mul:
+                        return Interpret(mul.Next(mul.Arg1 * mul.Arg2));
+                    case ReadLine<T, Free<Instruction<T>, TOutput>> readLine:
+                        return Interpret(readLine.Next((T)Convert.ChangeType(Console.ReadLine(), typeof(T))! ??
+                                                       throw new InvalidOperationException()));
+                    case WriteLine<T, Free<Instruction<T>, TOutput>> writeLine:
+                        Console.WriteLine(writeLine.Line);
+                        return Interpret(writeLine.Next());
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(program));
+                }
             default:
                 throw new ArgumentOutOfRangeException(nameof(program));
         }
