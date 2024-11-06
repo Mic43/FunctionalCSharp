@@ -12,7 +12,7 @@ public sealed record Some<T>(T Value) : Maybe<T>
     public static Some<T> Of(T value) => new(value);
 }
 
-public sealed class Maybe : IMonadPlus<Maybe>
+public abstract class Maybe : IMonadPlus<Maybe>
 {
     public static IKind<Maybe, V> Map<T, V>(IKind<Maybe, T> f, Func<T, V> fun) => IMonad<Maybe>.Map(f, fun);
 

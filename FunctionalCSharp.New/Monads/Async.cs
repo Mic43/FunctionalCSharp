@@ -12,7 +12,7 @@ public record Async<T>(Func<T> AsyncJob) : IKind<Async, T>
     public T Run() => AsyncJob();
 }
 
-public sealed class Async : IMonad<Async>
+public abstract class Async : IMonad<Async>
 {
     public static IKind<Async, V> Apply<T, V>(IKind<Async, T> applicative, IKind<Async, Func<T, V>> fun)
         => IMonad<Async>.Apply(applicative, fun);

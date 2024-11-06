@@ -11,7 +11,7 @@ public record List<T>(IEnumerable<T> SourceList) : IKind<List, T>
     public IEnumerable<T> SourceList { get; } = SourceList;
 }
 
-public sealed class List : IMonadPlus<List>, ITraversable<List>, IMonoid<List>
+public abstract class List : IMonadPlus<List>, ITraversable<List>, IMonoid<List>
 {
     public static IKind<List, V> Map<T, V>(IKind<List, T> f, Func<T, V> fun) => IMonad<List>.Map(f, fun);
 

@@ -9,7 +9,7 @@ public record ReaderT<TEnv, TMonad, T>(Func<TEnv, IKind<TMonad, T>> RunReaderT)
         new(env => RunReaderT(modifyEnvFunc(env)));
 }
 
-public class ReaderT<TEnv, TMonad> : IMonad<ReaderT<TEnv, TMonad>> where TMonad : IMonad<TMonad>
+public abstract class ReaderT<TEnv, TMonad> : IMonad<ReaderT<TEnv, TMonad>> where TMonad : IMonad<TMonad>
 {
     public static IKind<ReaderT<TEnv, TMonad>, V> Map<T, V>(IKind<ReaderT<TEnv, TMonad>, T> f, Func<T, V> fun) =>
         IMonad<ReaderT<TEnv, TMonad>>.Map(f, fun);

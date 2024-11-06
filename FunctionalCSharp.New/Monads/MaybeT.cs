@@ -6,7 +6,7 @@ public sealed record MaybeT<TMonad, T>(IKind<TMonad, Maybe<T>> InnerMonad)
     public static MaybeT<TMonad, T> Of(IKind<TMonad, Maybe<T>> innerMonad) => new(innerMonad);
 }
 
-public sealed class MaybeT<TMonad> : IMonadPlus<MaybeT<TMonad>> where TMonad : IMonad<TMonad>
+public abstract class MaybeT<TMonad> : IMonadPlus<MaybeT<TMonad>> where TMonad : IMonad<TMonad>
 {
     public static IKind<MaybeT<TMonad>, V> Map<T, V>(IKind<MaybeT<TMonad>, T> f, Func<T, V> fun)
         => IMonad<MaybeT<TMonad>>.Map(f, fun);

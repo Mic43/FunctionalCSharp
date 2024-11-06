@@ -11,7 +11,7 @@ public sealed record ValidationOk<T, TSemigroup, TError>(T Value)
 public sealed record ValidationFailed<T, TSemigroup, TError>(IKind<TSemigroup, TError> Errors)
     : Validation<T, TSemigroup, TError> where TSemigroup : ISemigroup<TSemigroup>;
 
-public sealed class Validation<TSemigroup, TError> : IApplicative<Validation<TSemigroup, TError>>
+public abstract class Validation<TSemigroup, TError> : IApplicative<Validation<TSemigroup, TError>>
     where TSemigroup : ISemigroup<TSemigroup>
 {
     public static IKind<Validation<TSemigroup, TError>, V> Map<T, V>(IKind<Validation<TSemigroup, TError>, T> f,

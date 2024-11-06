@@ -2,7 +2,7 @@ namespace FunctionalCSharp.New.Monads;
 
 public sealed record Identity<T>(T Value) : IKind<Identity, T>;
 
-public sealed class Identity : IMonad<Identity>
+public abstract class Identity : IMonad<Identity>
 {
     public static IKind<Identity, V> Map<T, V>(IKind<Identity, T> f, Func<T, V> fun) => IMonad<Identity>.Map(f, fun);
 

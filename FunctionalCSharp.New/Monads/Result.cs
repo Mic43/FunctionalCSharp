@@ -6,7 +6,7 @@ public sealed record Ok<T, TError>(T ResultValue) : Result<T, TError>;
 
 public sealed record Error<T, TError>(TError ErrorValue) : Result<T, TError>;
 
-public sealed class Result<TError> : IMonad<Result<TError>>
+public abstract class Result<TError> : IMonad<Result<TError>>
 {
     public static IKind<Result<TError>, V> Map<T, V>(IKind<Result<TError>, T> f, Func<T, V> fun)
         => IMonad<Result<TError>>.Map(f, fun);

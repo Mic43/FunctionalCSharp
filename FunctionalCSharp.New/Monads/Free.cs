@@ -7,7 +7,7 @@ public sealed record Pure<TFunctor, T>(T Value) : Free<TFunctor, T> where TFunct
 public sealed record Roll<TFunctor, T>(IKind<TFunctor, Free<TFunctor, T>> Free)
     : Free<TFunctor, T> where TFunctor : IFunctor<TFunctor>;
 
-public class Free<TFunctor> : IMonad<Free<TFunctor>> where TFunctor : IFunctor<TFunctor>
+public abstract class Free<TFunctor> : IMonad<Free<TFunctor>> where TFunctor : IFunctor<TFunctor>
 {
     public static IKind<Free<TFunctor>, V> Map<T, V>(IKind<Free<TFunctor>, T> f, Func<T, V> fun)
     {
@@ -48,7 +48,6 @@ public static class FreeExt
     public static Free<TFunctor, T> To<TFunctor, T>(this IKind<Free<TFunctor>, T> kind)
         where TFunctor : IFunctor<TFunctor> =>
         (Free<TFunctor, T>)kind;
-    
 
     public static Free<TFunctor, Z> SelectMany<TFunctor, T, V, Z>(this Free<TFunctor, T> free,
         Func<T, Free<TFunctor, V>> binder,

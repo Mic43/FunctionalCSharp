@@ -17,7 +17,7 @@ public record Concurrently<T>(Func<CancellationToken, T> Task) : IKind<Concurren
     public static Concurrently<T> AdditiveIdentity => Concurrently.Empty<T>().To();
 }
 
-public class Concurrently : IAlternative<Concurrently>
+public abstract class Concurrently : IAlternative<Concurrently>
 {
     public static IKind<Concurrently, V> Map<T, V>(IKind<Concurrently, T> f, Func<T, V> fun) =>
         new Concurrently<V>(ct => fun(f.To().Run()));

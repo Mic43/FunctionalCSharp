@@ -13,7 +13,7 @@ public record Reader<TEnv, T> : ReaderT<TEnv, Identity, T>
     public T RunReader(TEnv env) => RunReaderT(env).To().Value;
 }
 
-public class Reader<TEnv>
+public abstract class Reader<TEnv>
 {
     public static Reader<TEnv, TEnv> Ask() => new(ReaderT<TEnv, Identity>.Ask());
 

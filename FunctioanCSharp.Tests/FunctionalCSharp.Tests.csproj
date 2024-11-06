@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FunctionalCSharp.New\FunctionalCSharp.New.csproj" />
+    <ProjectReference Include="..\FunctionalCSharp.SampleDSL\FunctionalCSharp.SampleDSL.csproj" />
     <ProjectReference Include="..\FunctionalCSharp\FunctionalCSharp.csproj" />
   </ItemGroup>
 
