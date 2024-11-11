@@ -57,6 +57,21 @@ public abstract class Free<TFunctor> : IMonad<Free<TFunctor>> where TFunctor : I
 
     public static IKind<Free<TFunctor>, T> LiftF<T>(IKind<TFunctor, T> functor) =>
         new Roll<TFunctor, T>(TFunctor.Map(functor, t => Pure(t).To()));
+
+    public static T Iter<T>(Func<IKind<TFunctor, T>, T> fun, IKind<Free<TFunctor>, T> free)
+    {
+        switch (free.To())
+        {
+            case Pure<TFunctor, T> pure:
+                return pure.Value;
+            case Roll<TFunctor, T> roll:
+                var iter = Iter<T>;
+                var curried = Utils.Curry(iter)(fun);
+                return fun(TFunctor.Map(roll.Free, curried));
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
 }
 
 public static class FreeExt
