@@ -6,8 +6,14 @@ using System.Threading.Tasks;
 
 namespace FunctionalCSharp.New.Monads;
 
-public record Async<T>(Func<T> AsyncJob) : IKind<Async, T>
+public record Async<T> : IKind<Async, T>
 {
+    internal Func<T> AsyncJob { get; }
+
+    internal Async(Func<T> AsyncJob)
+    {
+        this.AsyncJob = AsyncJob;
+    }
     public static Async<T> FromResult(T result) => (Async<T>)Async.Pure(result);
     public T Run() => AsyncJob();
 }

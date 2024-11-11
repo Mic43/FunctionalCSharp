@@ -2,10 +2,26 @@ namespace FunctionalCSharp.New.Monads;
 
 public abstract record Free<TFunctor, T> : IKind<Free<TFunctor>, T> where TFunctor : IFunctor<TFunctor>;
 
-public sealed record Pure<TFunctor, T>(T Value) : Free<TFunctor, T> where TFunctor : IFunctor<TFunctor>;
+public sealed record Pure<TFunctor, T> : Free<TFunctor, T> where TFunctor : IFunctor<TFunctor>
+{
+    public T Value { get; }
 
-public sealed record Roll<TFunctor, T>(IKind<TFunctor, Free<TFunctor, T>> Free)
-    : Free<TFunctor, T> where TFunctor : IFunctor<TFunctor>;
+    internal Pure(T value)
+    {
+        Value = value;
+    }
+}
+
+public sealed record Roll<TFunctor, T>
+    : Free<TFunctor, T> where TFunctor : IFunctor<TFunctor>
+{
+    public IKind<TFunctor, Free<TFunctor, T>> Free { get; }
+
+    internal Roll(IKind<TFunctor, Free<TFunctor, T>> free)
+    {
+        Free = free;
+    }
+}
 
 public abstract class Free<TFunctor> : IMonad<Free<TFunctor>> where TFunctor : IFunctor<TFunctor>
 {

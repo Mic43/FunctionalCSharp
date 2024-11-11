@@ -2,11 +2,21 @@ using System.IO.Compression;
 
 namespace FunctionalCSharp.New.Monads;
 
-public record ReaderT<TEnv, TMonad, T>(Func<TEnv, IKind<TMonad, T>> RunReaderT)
+public record ReaderT<TEnv, TMonad, T>
     : IKind<ReaderT<TEnv, TMonad>, T> where TMonad : IMonad<TMonad>
 {
+    internal Func<TEnv, IKind<TMonad, T>> Inner { get; }
+
+    internal ReaderT(Func<TEnv, IKind<TMonad, T>> inner)
+    {
+        Inner = inner;
+    }
+
     public ReaderT<TEnv, TMonad, T> Local(Func<TEnv, TEnv> modifyEnvFunc) =>
-        new(env => RunReaderT(modifyEnvFunc(env)));
+        new(env => Inner(modifyEnvFunc(env)));
+
+    public IKind<TMonad, T> RunReaderT(TEnv env) =>
+        Inner(env);
 }
 
 public abstract class ReaderT<TEnv, TMonad> : IMonad<ReaderT<TEnv, TMonad>> where TMonad : IMonad<TMonad>
@@ -24,8 +34,8 @@ public abstract class ReaderT<TEnv, TMonad> : IMonad<ReaderT<TEnv, TMonad>> wher
         var readerT = monad.To();
         return new ReaderT<TEnv, TMonad, V>(env =>
         {
-            var resT = readerT.RunReaderT(env);
-            return TMonad.Bind(resT, t => fun(t).To().RunReaderT(env));
+            var resT = readerT.Inner(env);
+            return TMonad.Bind(resT, t => fun(t).To().Inner(env));
         });
     }
 
@@ -40,6 +50,9 @@ public abstract class ReaderT<TEnv, TMonad> : IMonad<ReaderT<TEnv, TMonad>> wher
 
     public static ReaderT<TEnv, TMonad, T> Local<T>(ReaderT<TEnv, TMonad, T> reader,
         Func<TEnv, TEnv> modifyEnvFunc) => reader.Local(modifyEnvFunc);
+
+    public static IKind<TMonad, T> RunReaderT<T>(ReaderT<TEnv, TMonad, T> reader, TEnv env) =>
+        reader.RunReaderT(env);
 }
 
 public static class ReaderTExt

@@ -42,7 +42,7 @@ public class ReaderTest
 
         float config = 5.0f;
         string input = "sss";
-
+        
         var readerT = 
             from a in ReaderT<float, Maybe>.Lift(DoSthA(input)).To()
             from env in ReaderT<float, Maybe>.Ask()
@@ -63,5 +63,6 @@ public class ReaderTest
             default:
                 throw new ArgumentOutOfRangeException(nameof(actual));
         }
+        
     }
 }

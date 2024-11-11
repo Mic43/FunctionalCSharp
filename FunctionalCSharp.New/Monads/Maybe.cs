@@ -58,7 +58,7 @@ public static class MaybeExt
         return Maybe.Bind(maybe, t => Maybe.Bind(binder(t), v => Maybe.Pure(projection(t, v)))).To();
     }
 
-    public static Maybe<V> Select<T, V, TEnv>(this Maybe<T> maybe, Func<T, V> mapper)
+    public static Maybe<V> Select<T, V>(this Maybe<T> maybe, Func<T, V> mapper)
     {
         return Maybe.Map(maybe, mapper).To();
     }
