@@ -2,11 +2,11 @@ namespace FunctionalCSharp.New.Monads;
 
 public record Reader<TEnv, T> : ReaderT<TEnv, Identity, T>
 {
-    public Reader(Func<TEnv, T> runReader) : base(e => new Identity<T>(runReader(e)))
+    internal Reader(Func<TEnv, T> runReader) : base(e => new Identity<T>(runReader(e)))
     {
     }
 
-    public Reader(ReaderT<TEnv, Identity, T> readerT) : base(readerT.RunReaderT)
+    internal Reader(ReaderT<TEnv, Identity, T> readerT) : base(readerT.RunReaderT)
     {
     }
 
@@ -28,14 +28,9 @@ public abstract class Reader<TEnv>
 public static class ReaderExt
 {
     public static Reader<TEnv, Z> SelectMany<T, V, Z, TEnv>(this Reader<TEnv, T> reader,
-        Func<T, Reader<TEnv, V>> binder,
-        Func<T, V, Z> projection)
-    {
-        return new Reader<TEnv, Z>(ReaderTExt.SelectMany(reader, binder, projection));
-    }
-    public static Reader<TEnv, V> Select<T, V, TEnv>(this Reader<TEnv, T> reader, Func<T, V> mapper)
-    {
-        return new Reader<TEnv, V>(ReaderTExt.Select(reader, mapper));
-    }
+        Func<T, Reader<TEnv, V>> binder, Func<T, V, Z> projection) =>
+        new(ReaderTExt.SelectMany(reader, binder, projection));
+
+    public static Reader<TEnv, V> Select<T, V, TEnv>(this Reader<TEnv, T> reader, Func<T, V> mapper) => new(ReaderTExt.Select(reader, mapper));
     public static Reader<TEnv, T> To<TEnv, T>(this IKind<Reader<TEnv>, T> kind) => (Reader<TEnv, T>)kind;
 }
