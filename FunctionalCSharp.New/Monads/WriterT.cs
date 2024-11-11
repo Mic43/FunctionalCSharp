@@ -14,10 +14,25 @@ public record WriterT<TMonoid, TOut, TMonad, T>
 {
     public IKind<TMonad, (IKind<TMonoid, TOut>, T)> RunWriterT { get; }
 
+    public IKind<TMonad, T> ExecWriterT => TMonad.Map(RunWriterT, tuple => tuple.Item2);
+
     internal WriterT(IKind<TMonad, (IKind<TMonoid, TOut>, T)> inner)
     {
         RunWriterT = inner;
     }
+
+    public WriterT<TMonoid, TOut, TMonad, (T, V)> Listens<V>(Func<IKind<TMonoid, TOut>, V> fun)
+    {
+        var original = RunWriterT;
+        return new WriterT<TMonoid, TOut, TMonad, (T, V)>(TMonad.Map(original,
+            tuple => (tuple.Item1, (tuple.Item2, fun(tuple.Item1)))));
+    }
+
+    public WriterT<TMonoid, TOut, TMonad, (T, IKind<TMonoid, TOut>)> Listen() => Listens(
+        o => o);
+
+    public WriterT<TMonoid, TOut, TMonad, T> Censor(Func<IKind<TMonoid, TOut>, IKind<TMonoid, TOut>> fun) =>
+        new(TMonad.Map(RunWriterT, tuple => (fun(tuple.Item1), tuple.Item2)));
 }
 
 public abstract class WriterT<TMonoid, TOut, TMonad> : IMonad<WriterT<TMonoid, TOut, TMonad>>
@@ -48,6 +63,28 @@ public abstract class WriterT<TMonoid, TOut, TMonad> : IMonad<WriterT<TMonoid, T
 
     public static IKind<WriterT<TMonoid, TOut, TMonad>, T> Pure<T>(T value) =>
         new WriterT<TMonoid, TOut, TMonad, T>(TMonad.Pure((TMonoid.Identity<TOut>(), value)));
+
+    public static IKind<WriterT<TMonoid, TOut, TMonad>, T> Lift<T>(IKind<TMonad, T> monad) =>
+        new WriterT<TMonoid, TOut, TMonad, T>(TMonad.Map(monad, t => (TMonoid.Identity<TOut>(), t)));
+
+    public static IKind<WriterT<TMonoid, TOut, TMonad>, T> Writer<T>(T value, IKind<TMonoid, TOut> outValue) =>
+        new WriterT<TMonoid, TOut, TMonad, T>(TMonad.Pure((
+            TMonoid.Combine(TMonoid.Identity<TOut>(), outValue), value)));
+
+    public static IKind<WriterT<TMonoid, TOut, TMonad>, Unit> Tell(IKind<TMonoid, TOut> outValue) =>
+        Writer(Unit.Instance(), outValue);
+
+    public static IKind<WriterT<TMonoid, TOut, TMonad>, (T, V)> Listens<T, V>
+        (IKind<WriterT<TMonoid, TOut, TMonad>, T> writerT, Func<IKind<TMonoid, TOut>, V> fun) =>
+        writerT.To().Listens(fun);
+
+    public static IKind<WriterT<TMonoid, TOut, TMonad>, (T, IKind<TMonoid, TOut>)> Listen<T>
+        (IKind<WriterT<TMonoid, TOut, TMonad>, T> writerT) =>
+        writerT.To().Listen();
+
+    public static IKind<WriterT<TMonoid, TOut, TMonad>, T> Censor<T>(IKind<WriterT<TMonoid, TOut, TMonad>, T> writerT,
+        Func<IKind<TMonoid, TOut>, IKind<TMonoid, TOut>> fun) =>
+        writerT.To().Censor(fun);
 }
 
 public static class WriterTExt
