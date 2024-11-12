@@ -26,6 +26,12 @@ sealed record If<T, TNext>(
     Func<T, TNext> Next)
     : Instruction<T, TNext>;
 
+sealed record Try<T, TNext>(
+    Free<Instruction<T>, TNext> Guarded,
+    Free<Instruction<T>, TNext> OnCatch,
+    Func<T, TNext> Next
+) : Instruction<T, TNext>;
+
 /// <summary>
 /// Helper class for creating DSL instructions
 /// </summary>
@@ -42,9 +48,15 @@ public static class Instructions
         Free<Instruction<T>, T> onFalse) =>
         Free<Instruction<T>>.LiftF(new If<T, T>(condition, onTrue, onFalse, z => z)).To();
 
+    public static Free<Instruction<T>, T> Try<T>(
+        Free<Instruction<T>, T> guarded,
+        Free<Instruction<T>, T> onCatch) =>
+        Free<Instruction<T>>.LiftF(new Try<T, T>(guarded, onCatch, z => z)).To();
+
+
     public static Free<Instruction<T>, T> Read<T>() =>
         Free<Instruction<T>>.LiftF(new Read<T, T>(t => t)).To();
-    
+
     public static Free<Instruction<T>, Unit> Write<T>(T value) =>
         Free<Instruction<T>>.LiftF(new Write<T, Unit>(value, Unit.Instance)).To();
 
@@ -71,6 +83,10 @@ public abstract class Instruction<T> : IFunctor<Instruction<T>>
             ),
             Mul<T, TNext> mul => new Mul<T, VNext>(mul.Arg1, mul.Arg2, mul.Next.Compose(fun)),
             Read<T, TNext> readLine => new Read<T, VNext>(readLine.Next.Compose(fun)),
+            Try<T, TNext> @try => new Try<T, VNext>(
+                Free<Instruction<T>>.Map(@try.Guarded, fun).To(),
+                Free<Instruction<T>>.Map(@try.OnCatch, fun).To(),
+                @try.Next.Compose(fun)),
             Write<T, TNext> writeLine => new Write<T, VNext>(writeLine.Value, () => fun(writeLine.Next())),
             _ => throw new ArgumentOutOfRangeException(nameof(f))
         };

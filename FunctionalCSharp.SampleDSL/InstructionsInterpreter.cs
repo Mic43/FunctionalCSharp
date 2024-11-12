@@ -24,6 +24,15 @@ public class InstructionsInterpreter : IInstructionsInterpreter
             case Read<T, TNext> read:
                 return read.Next((T)Convert.ChangeType(Console.ReadLine(), typeof(T))! ??
                                  throw new InvalidOperationException());
+            case Try<T, TNext> @try:
+                try
+                {
+                    return Interpret(@try.Guarded);
+                }
+                catch (Exception _)
+                {
+                    return Interpret(@try.OnCatch);
+                }
             case Write<T, TNext> write:
                 Console.Write(write.Value);
                 return write.Next();

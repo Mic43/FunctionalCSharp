@@ -72,6 +72,21 @@ public abstract class Free<TFunctor> : IMonad<Free<TFunctor>> where TFunctor : I
                 throw new ArgumentOutOfRangeException();
         }
     }
+    // public static IKind<Free<TFunctorB>, T> Hoist<T, V, TFunctorB>(Func<IKind<TFunctor, V>, IKind<TFunctorB, V>> fun,
+    //     IKind<Free<TFunctor>, T> free) where TFunctorB : IFunctor<TFunctorB>
+    // {
+    //     switch (free.To())
+    //     {
+    //         case Pure<TFunctor, T> pure:
+    //             return Free<TFunctorB>.Pure(pure.Value);
+    //         case Roll<TFunctor, T> roll:
+    //             var res = TFunctor.Map(roll.Free, free => Hoist(fun, free).To());
+    //             fun(res);
+    //
+    //         default:
+    //             throw new ArgumentOutOfRangeException();
+    //     }
+    // }
 }
 
 public static class FreeExt
