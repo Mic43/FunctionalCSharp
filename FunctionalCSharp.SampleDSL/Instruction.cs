@@ -13,10 +13,10 @@ sealed record Add<T, TNext>(T Arg1, T Arg2, Func<T, TNext> Next)
 sealed record Mul<T, TNext>(T Arg1, T Arg2, Func<T, TNext> Next)
     : Instruction<T, TNext>;
 
-sealed record ReadLine<T, TNext>(Func<T, TNext> Next)
+sealed record Read<T, TNext>(Func<T, TNext> Next)
     : Instruction<T, TNext>;
 
-sealed record WriteLine<T, TNext>(string Line, Func<TNext> Next)
+sealed record Write<T, TNext>(T Value, Func<TNext> Next)
     : Instruction<T, TNext>;
 
 sealed record If<T, TNext>(
@@ -42,11 +42,11 @@ public static class Instructions
         Free<Instruction<T>, T> onFalse) =>
         Free<Instruction<T>>.LiftF(new If<T, T>(condition, onTrue, onFalse, z => z)).To();
 
-    public static Free<Instruction<T>, T> ReadLine<T>() =>
-        Free<Instruction<T>>.LiftF(new ReadLine<T, T>(t => t)).To();
-
-    public static Free<Instruction<T>, Unit> WriteLine<T>(string line) =>
-        Free<Instruction<T>>.LiftF(new WriteLine<T, Unit>(line, Unit.Instance)).To();
+    public static Free<Instruction<T>, T> Read<T>() =>
+        Free<Instruction<T>>.LiftF(new Read<T, T>(t => t)).To();
+    
+    public static Free<Instruction<T>, Unit> Write<T>(T value) =>
+        Free<Instruction<T>>.LiftF(new Write<T, Unit>(value, Unit.Instance)).To();
 
     public static Free<Instruction<T>, T> Const<T>(T value) =>
         Free<Instruction<T>>.Pure(value).To();
@@ -56,22 +56,22 @@ public static class Instructions
 /// Functor implementation 
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public abstract class Instruction<T> : FunctionalCSharp.New.IFunctor<Instruction<T>>
+public abstract class Instruction<T> : IFunctor<Instruction<T>>
 {
     public static IKind<Instruction<T>, VNext> Map<TNext, VNext>(IKind<Instruction<T>, TNext> f, Func<TNext, VNext> fun)
     {
         var ff = (Instruction<T, TNext>)f;
         return ff switch
         {
-            Add<T, TNext> add => new Add<T, VNext>(add.Arg1, add.Arg2, t => fun(add.Next(t))),
+            Add<T, TNext> add => new Add<T, VNext>(add.Arg1, add.Arg2, add.Next.Compose(fun)),
             If<T, TNext> @if => new If<T, VNext>(@if.Condition,
                 Free<Instruction<T>>.Map(@if.OnTrue, fun).To(),
                 Free<Instruction<T>>.Map(@if.OnFalse, fun).To(),
-                t => fun(@if.Next(t))
+                @if.Next.Compose(fun)
             ),
-            Mul<T, TNext> mul => new Mul<T, VNext>(mul.Arg1, mul.Arg2, t => fun(mul.Next(t))),
-            ReadLine<T, TNext> readLine => new ReadLine<T, VNext>(t => fun(readLine.Next(t))),
-            WriteLine<T, TNext> writeLine => new WriteLine<T, VNext>(writeLine.Line, () => fun(writeLine.Next())),
+            Mul<T, TNext> mul => new Mul<T, VNext>(mul.Arg1, mul.Arg2, mul.Next.Compose(fun)),
+            Read<T, TNext> readLine => new Read<T, VNext>(readLine.Next.Compose(fun)),
+            Write<T, TNext> writeLine => new Write<T, VNext>(writeLine.Value, () => fun(writeLine.Next())),
             _ => throw new ArgumentOutOfRangeException(nameof(f))
         };
     }

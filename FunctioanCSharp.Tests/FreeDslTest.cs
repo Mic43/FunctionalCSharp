@@ -23,6 +23,7 @@ public class FreeDslTest
         int a = 1;
         int b = 2;
         int c = 3;
+        
         var program =
             from r1 in Instructions.Add(a, b)
             from r2 in Instructions.Mul(r1, c)
@@ -31,7 +32,7 @@ public class FreeDslTest
                 Instructions.Const(b))
             select z;
 
-        IInterpreter interpreter = new BasicInterpreter();
+        IInstructionsInterpreter interpreter = new InstructionsInterpreter();
         // IInterpreter interpreter = new LoggingInterpreter(new BasicInterpreter(), _testOutputHelper);
         var result = interpreter.Interpret(program);
 

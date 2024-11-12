@@ -9,7 +9,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\FunctionalCSharp.New\FunctionalCSharp.New.csproj" />
-      <ProjectReference Include="..\FunctionalCSharp\FunctionalCSharp.csproj" />
     </ItemGroup>
 
 </Project>
