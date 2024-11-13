@@ -32,7 +32,7 @@ public class FreeDslTest
                 Instructions.Const(a),
                 Instructions.Const(b))
             select z;
-
+        
         IInstructionsInterpreter interpreter = new InstructionsInterpreter();
         // IInterpreter interpreter = new LoggingInterpreter(new BasicInterpreter(), _testOutputHelper);
         var result = interpreter.Interpret(program);

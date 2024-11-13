@@ -9,10 +9,3 @@ public static class Utils
         t => t2 => f(t, t2);
     public static Func<T, Z> Compose<T, V, Z>(this Func<T, V> a, Func<V, Z> b) => t => b(a(t));
 }
-
-public record Unit
-{
-    public static Unit Instance() => new Unit();
-}
-
-
