@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionalCSharp.New", "Fun
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionalCSharp.SampleDSL", "FunctionalCSharp.SampleDSL\FunctionalCSharp.SampleDSL.csproj", "{3D74604C-955C-415B-A67F-64C882B73272}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinalTaglessStyle", "FinalTaglessStyle\FinalTaglessStyle.csproj", "{955E8F15-BC32-4736-B533-22E7CF34CD2A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{3D74604C-955C-415B-A67F-64C882B73272}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3D74604C-955C-415B-A67F-64C882B73272}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3D74604C-955C-415B-A67F-64C882B73272}.Release|Any CPU.Build.0 = Release|Any CPU
+		{955E8F15-BC32-4736-B533-22E7CF34CD2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{955E8F15-BC32-4736-B533-22E7CF34CD2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{955E8F15-BC32-4736-B533-22E7CF34CD2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{955E8F15-BC32-4736-B533-22E7CF34CD2A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

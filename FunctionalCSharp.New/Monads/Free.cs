@@ -1,6 +1,19 @@
 namespace FunctionalCSharp.New.Monads;
 
-public abstract record Free<TFunctor, T> : IKind<Free<TFunctor>, T> where TFunctor : IFunctor<TFunctor>;
+public abstract record Free<TFunctor, T> : IKind<Free<TFunctor>, T> where TFunctor : IFunctor<TFunctor>
+{
+    public IKind<Free<TFunctorB>, T> Hoist<TFunctorB>(INaturalTransformation<TFunctor, TFunctorB> fun)
+        where TFunctorB : IFunctor<TFunctorB>
+    {
+        return this switch
+        {
+            Pure<TFunctor, T> pure => Free<TFunctorB>.Pure(pure.Value),
+            Roll<TFunctor, T> roll => new Roll<TFunctorB, T>(
+                fun.Transform(TFunctor.Map(roll.Free, next => next.Hoist(fun).To()))),
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+}
 
 public sealed record Pure<TFunctor, T> : Free<TFunctor, T> where TFunctor : IFunctor<TFunctor>
 {
@@ -72,21 +85,10 @@ public abstract class Free<TFunctor> : IMonad<Free<TFunctor>> where TFunctor : I
                 throw new ArgumentOutOfRangeException();
         }
     }
-    // public static IKind<Free<TFunctorB>, T> Hoist<T, V, TFunctorB>(Func<IKind<TFunctor, V>, IKind<TFunctorB, V>> fun,
-    //     IKind<Free<TFunctor>, T> free) where TFunctorB : IFunctor<TFunctorB>
-    // {
-    //     switch (free.To())
-    //     {
-    //         case Pure<TFunctor, T> pure:
-    //             return Free<TFunctorB>.Pure(pure.Value);
-    //         case Roll<TFunctor, T> roll:
-    //             var res = TFunctor.Map(roll.Free, free => Hoist(fun, free).To());
-    //             fun(res);
-    //
-    //         default:
-    //             throw new ArgumentOutOfRangeException();
-    //     }
-    // }
+
+    public static IKind<Free<TFunctorB>, T> Hoist<T, TFunctorB>(INaturalTransformation<TFunctor, TFunctorB> fun,
+        IKind<Free<TFunctor>, T> free) where TFunctorB : IFunctor<TFunctorB> =>
+        free.To().Hoist(fun);
 }
 
 public static class FreeExt

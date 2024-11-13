@@ -32,10 +32,9 @@ public class Tst
         Console.WriteLine(result);
 
         var program2 =
-            from z in Free<CombinedLanguageInstruction<int>>.LiftF(
-                new CInstruction<int, int>(new Add<int, int>(a, b, z => z))).To()
-            from _ in Free<CombinedLanguageInstruction<int>>.LiftF(
-                new CNewInstruction<int, Unit>(new WriteLine<Unit>("kwakwakwa", Unit.Instance))).To()
+            from z in Instructions.Add(a, b).ToCombined()
+            from vv in Instructions.Add(z, b).ToCombined()
+            from _ in NewInstructions.WriteLine("aaaa" + vv).ToCombined<int, Unit>()
             select z;
 
         CombinedLanguageInterpreter i = new CombinedLanguageInterpreter(interpreter, new NewInstructionsInterpreter());
