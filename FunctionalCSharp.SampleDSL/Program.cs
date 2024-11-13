@@ -2,6 +2,9 @@
 using System.Security.AccessControl;
 using FunctionalCSharp.New;
 using FunctionalCSharp.New.Monads;
+using FunctionalCSharp.SampleDSL.CombinedLanguage;
+using FunctionalCSharp.SampleDSL.FirstLanguage;
+using FunctionalCSharp.SampleDSL.NewLanguage;
 
 namespace FunctionalCSharp.SampleDSL;
 

@@ -1,8 +1,10 @@
 using System.Numerics;
 using FunctionalCSharp.New;
 using FunctionalCSharp.New.Monads;
+using FunctionalCSharp.SampleDSL.FirstLanguage;
+using FunctionalCSharp.SampleDSL.NewLanguage;
 
-namespace FunctionalCSharp.SampleDSL;
+namespace FunctionalCSharp.SampleDSL.CombinedLanguage;
 
 class CombinedLanguageInterpreter(
     IInstructionsInterpreter instructionsInterpreter,

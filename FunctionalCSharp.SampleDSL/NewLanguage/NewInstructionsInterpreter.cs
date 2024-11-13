@@ -1,15 +1,6 @@
-using System.Numerics;
 using FunctionalCSharp.New;
-using FunctionalCSharp.New.Monads;
 
-namespace FunctionalCSharp.SampleDSL;
-
-interface INewInstructionsInterpreter
-{
-    public TOutput Interpret<TOutput>(Free<NewInstruction, TOutput> program)
-        => Free<NewInstruction>.Iter(InterpretSingle, program);
-    public TNext InterpretSingle<TNext>(IKind<NewInstruction, TNext> instruction);
-}
+namespace FunctionalCSharp.SampleDSL.NewLanguage;
 
 class NewInstructionsInterpreter : INewInstructionsInterpreter
 {

@@ -1,8 +1,7 @@
-using System.Numerics;
 using FunctionalCSharp.New;
 using FunctionalCSharp.New.Monads;
 
-namespace FunctionalCSharp.SampleDSL;
+namespace FunctionalCSharp.SampleDSL.FirstLanguage;
 
 // Sample DSL instructions
 abstract record Instruction<T, TNext> : IKind<Instruction<T>, TNext>;

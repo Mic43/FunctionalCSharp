@@ -1,7 +1,7 @@
 using FunctionalCSharp.New;
 using FunctionalCSharp.New.Monads;
 
-namespace FunctionalCSharp.SampleDSL;
+namespace FunctionalCSharp.SampleDSL.NewLanguage;
 
 abstract record NewInstruction<TNext> : IKind<NewInstruction, TNext>;
 

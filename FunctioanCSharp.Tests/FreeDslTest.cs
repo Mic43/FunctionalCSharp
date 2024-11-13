@@ -3,6 +3,7 @@ using System.Numerics;
 using FunctionalCSharp.New;
 using FunctionalCSharp.New.Monads;
 using FunctionalCSharp.SampleDSL;
+using FunctionalCSharp.SampleDSL.FirstLanguage;
 using Xunit;
 using Xunit.Abstractions;
 

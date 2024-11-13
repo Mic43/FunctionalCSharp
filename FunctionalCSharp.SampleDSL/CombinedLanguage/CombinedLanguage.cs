@@ -1,6 +1,8 @@
 using FunctionalCSharp.New;
+using FunctionalCSharp.SampleDSL.FirstLanguage;
+using FunctionalCSharp.SampleDSL.NewLanguage;
 
-namespace FunctionalCSharp.SampleDSL;
+namespace FunctionalCSharp.SampleDSL.CombinedLanguage;
 
 abstract record CombinedLanguageInstruction<T, TNext> : IKind<CombinedLanguageInstruction<T>, TNext>;
 

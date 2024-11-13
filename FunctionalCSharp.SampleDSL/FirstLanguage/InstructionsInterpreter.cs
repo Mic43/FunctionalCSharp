@@ -2,7 +2,7 @@ using System.Numerics;
 using FunctionalCSharp.New;
 using FunctionalCSharp.New.Monads;
 
-namespace FunctionalCSharp.SampleDSL;
+namespace FunctionalCSharp.SampleDSL.FirstLanguage;
 
 public class InstructionsInterpreter : IInstructionsInterpreter
 {
