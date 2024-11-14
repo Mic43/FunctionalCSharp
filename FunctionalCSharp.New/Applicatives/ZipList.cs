@@ -1,4 +1,4 @@
-namespace FunctionalCSharp.New;
+namespace FunctionalCSharp.New.Applicatives;
 
 public class ZipList
 {

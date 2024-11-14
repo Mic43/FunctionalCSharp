@@ -12,7 +12,6 @@ public interface IMonad<TMonad> : IApplicative<TMonad> where TMonad : IMonad<TMo
         => TMonad.Bind(monad, innerMonad => innerMonad);
 
     public static abstract IKind<TMonad, V> Bind<T, V>(IKind<TMonad, T> monad, Func<T, IKind<TMonad, V>> fun);
-    
 }
 
 public interface IMonadPlus<TMonad> : IMonad<TMonad>, IAlternative<TMonad>

@@ -21,12 +21,9 @@ public record WriterT<TMonoid, TOut, TMonad, T>
         RunWriterT = inner;
     }
 
-    public WriterT<TMonoid, TOut, TMonad, (T, V)> Listens<V>(Func<IKind<TMonoid, TOut>, V> fun)
-    {
-        var original = RunWriterT;
-        return new WriterT<TMonoid, TOut, TMonad, (T, V)>(TMonad.Map(original,
+    public WriterT<TMonoid, TOut, TMonad, (T, V)> Listens<V>(Func<IKind<TMonoid, TOut>, V> fun) =>
+        new(TMonad.Map(RunWriterT,
             tuple => (tuple.Item1, (tuple.Item2, fun(tuple.Item1)))));
-    }
 
     public WriterT<TMonoid, TOut, TMonad, (T, IKind<TMonoid, TOut>)> Listen() => Listens(
         o => o);
@@ -103,15 +100,11 @@ public static class WriterTExt
     public static WriterT<TMonoid, TOut, TMonad, V> Select<T, V, TMonoid, TOut, TMonad>(
         this WriterT<TMonoid, TOut, TMonad, T> writerT,
         Func<T, V> mapper)
-        where TMonad : IMonad<TMonad> where TMonoid : IMonoid<TMonoid>
-    {
-        return WriterT<TMonoid, TOut, TMonad>.Map(writerT, mapper).To();
-    }
+        where TMonad : IMonad<TMonad> where TMonoid : IMonoid<TMonoid> =>
+        WriterT<TMonoid, TOut, TMonad>.Map(writerT, mapper).To();
 
     public static WriterT<TMonoid, TOut, TMonad, T> To<TMonoid, TOut, TMonad, T>(
         this IKind<WriterT<TMonoid, TOut, TMonad>, T> kind)
-        where TMonad : IMonad<TMonad> where TMonoid : IMonoid<TMonoid>
-    {
-        return (WriterT<TMonoid, TOut, TMonad, T>)kind;
-    }
+        where TMonad : IMonad<TMonad> where TMonoid : IMonoid<TMonoid> =>
+        (WriterT<TMonoid, TOut, TMonad, T>)kind;
 }

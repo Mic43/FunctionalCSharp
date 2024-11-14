@@ -2,9 +2,21 @@
 
 public abstract record Result<T, TError> : IKind<Result<TError>, T>;
 
-public sealed record Ok<T, TError>(T ResultValue) : Result<T, TError>;
+public sealed record Ok<T, TError>(T ResultValue) : Result<T, TError>
+{
+    public void Deconstruct(out T resultValue)
+    {
+        resultValue = ResultValue;
+    }
+}
 
-public sealed record Error<T, TError>(TError ErrorValue) : Result<T, TError>;
+public sealed record Error<T, TError>(TError ErrorValue) : Result<T, TError>
+{
+    public void Deconstruct(out TError errorValue)
+    {
+        errorValue = ErrorValue;
+    }
+}
 
 public abstract class Result<TError> : IMonad<Result<TError>>
 {
@@ -16,10 +28,8 @@ public abstract class Result<TError> : IMonad<Result<TError>>
         => IMonad<Result<TError>>.Apply(applicative, fun);
 
     public static IKind<Result<TError>, Z> Lift2<T, V, Z>(Func<T, V, Z> operation, IKind<Result<TError>, T> app1,
-        IKind<Result<TError>, V> app2)
-    {
-        return IMonad<Result<TError>>.Lift2(operation, app1, app2);
-    }
+        IKind<Result<TError>, V> app2) =>
+        IMonad<Result<TError>>.Lift2(operation, app1, app2);
 
     public static IKind<Result<TError>, V> Bind<T, V>(IKind<Result<TError>, T> monad,
         Func<T, IKind<Result<TError>, V>> fun)
@@ -28,8 +38,8 @@ public abstract class Result<TError> : IMonad<Result<TError>>
 
         return m switch
         {
-            Ok<T, TError> ok => fun(ok.ResultValue),
-            Error<T, TError> error => new Error<V, TError>(error.ErrorValue),
+            Ok<T, TError> (var value) => fun(value),
+            Error<T, TError> (var error) => new Error<V, TError>(error),
             _ => throw new ArgumentOutOfRangeException(nameof(monad))
         };
     }
@@ -37,8 +47,5 @@ public abstract class Result<TError> : IMonad<Result<TError>>
     public static IKind<Result<TError>, T> Join<T>(IKind<Result<TError>, IKind<Result<TError>, T>> monad)
         => IMonad<Result<TError>>.Join(monad);
 
-    public static IKind<Result<TError>, T> Pure<T>(T value)
-    {
-        return new Ok<T, TError>(value);
-    }
+    public static IKind<Result<TError>, T> Pure<T>(T value) => new Ok<T, TError>(value);
 }

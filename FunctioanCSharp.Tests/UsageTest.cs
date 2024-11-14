@@ -2,6 +2,7 @@ using System;
 using System.Numerics;
 using System.Threading.Tasks;
 using FunctionalCSharp.New;
+using FunctionalCSharp.New.Applicatives;
 using FunctionalCSharp.New.Monads;
 
 namespace FunctionalCSharp.Tests;

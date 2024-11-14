@@ -19,10 +19,9 @@ public sealed record Pure<TFunctor, T> : Free<TFunctor, T> where TFunctor : IFun
 {
     public T Value { get; }
 
-    internal Pure(T value)
-    {
-        Value = value;
-    }
+    internal Pure(T value) => Value = value;
+
+    public void Deconstruct(out T value) => value = Value;
 }
 
 public sealed record Roll<TFunctor, T>
@@ -30,36 +29,31 @@ public sealed record Roll<TFunctor, T>
 {
     public IKind<TFunctor, Free<TFunctor, T>> Free { get; }
 
-    internal Roll(IKind<TFunctor, Free<TFunctor, T>> free)
-    {
-        Free = free;
-    }
+    internal Roll(IKind<TFunctor, Free<TFunctor, T>> free) => Free = free;
+
+    public void Deconstruct(out IKind<TFunctor, Free<TFunctor, T>> free) => free = Free;
 }
 
 public abstract class Free<TFunctor> : IMonad<Free<TFunctor>> where TFunctor : IFunctor<TFunctor>
 {
-    public static IKind<Free<TFunctor>, V> Map<T, V>(IKind<Free<TFunctor>, T> f, Func<T, V> fun)
-    {
-        return IMonad<Free<TFunctor>>.Map(f, fun);
-    }
+    public static IKind<Free<TFunctor>, V> Map<T, V>(IKind<Free<TFunctor>, T> f, Func<T, V> fun) =>
+        IMonad<Free<TFunctor>>.Map(f, fun);
 
     public static IKind<Free<TFunctor>, V> Apply<T, V>(IKind<Free<TFunctor>, T> applicative,
-        IKind<Free<TFunctor>, Func<T, V>> fun)
-    {
-        return IMonad<Free<TFunctor>>.Apply(applicative, fun);
-    }
+        IKind<Free<TFunctor>, Func<T, V>> fun) =>
+        IMonad<Free<TFunctor>>.Apply(applicative, fun);
 
     public static IKind<Free<TFunctor>, V> Bind<T, V>(IKind<Free<TFunctor>, T> monad,
         Func<T, IKind<Free<TFunctor>, V>> fun)
     {
         switch (monad.To())
         {
-            case Pure<TFunctor, T> pure:
-                return fun(pure.Value);
-            case Roll<TFunctor, T> roll:
+            case Pure<TFunctor, T> (var value):
+                return fun(value);
+            case Roll<TFunctor, T> (var free):
             {
                 var ff = (IKind<Free<TFunctor>, T> f) => Bind(f, fun).To();
-                return new Roll<TFunctor, V>(TFunctor.Map(roll.Free, ff));
+                return new Roll<TFunctor, V>(TFunctor.Map(free, ff));
             }
             default:
                 throw new ArgumentOutOfRangeException(nameof(monad));
@@ -75,12 +69,12 @@ public abstract class Free<TFunctor> : IMonad<Free<TFunctor>> where TFunctor : I
     {
         switch (free.To())
         {
-            case Pure<TFunctor, T> pure:
-                return pure.Value;
-            case Roll<TFunctor, T> roll:
+            case Pure<TFunctor, T> (var value):
+                return value;
+            case Roll<TFunctor, T> (var f):
                 var iter = Iter<T>;
                 var curried = Utils.Curry(iter)(fun);
-                return fun(TFunctor.Map(roll.Free, curried));
+                return fun(TFunctor.Map(f, curried));
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -106,8 +100,6 @@ public static class FreeExt
     }
 
     public static Free<TFunctor, V> Select<TFunctor, T, V>(this Free<TFunctor, T> free, Func<T, V> mapper)
-        where TFunctor : IFunctor<TFunctor>
-    {
-        return Free<TFunctor>.Map(free, mapper).To();
-    }
+        where TFunctor : IFunctor<TFunctor> =>
+        Free<TFunctor>.Map(free, mapper).To();
 }

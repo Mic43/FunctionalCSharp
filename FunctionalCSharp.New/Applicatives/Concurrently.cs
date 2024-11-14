@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace FunctionalCSharp.New;
+namespace FunctionalCSharp.New.Applicatives;
 
 public record Concurrently<T>(Func<CancellationToken, T> Task) : IKind<Concurrently, T>,
     IAdditionOperators<Concurrently<T>, Concurrently<T>, Concurrently<T>>,

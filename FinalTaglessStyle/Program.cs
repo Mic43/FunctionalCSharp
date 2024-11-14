@@ -10,12 +10,11 @@ using FunctionalCSharp.New;
     
 
 //
-// IKind<M, TMonad> Foo<M,TMonad>() 
-//     where M:IFileSystem<TMonad>,IHttpRest<TMonad> 
-//     where TMonad : IMonad<TMonad>
+// IKind<TDependency, T> Foo<TDependency,T>() 
+//     where TDependency:IFileSystem2<T>,IHttpRest<T> 
 // {
-//     var x =  M.CreateFile("aaa");
+//     var x =  TDependency.CreateFile("aaa");
 // }
-//
-//
+
+
 Console.WriteLine("Hello, World!");

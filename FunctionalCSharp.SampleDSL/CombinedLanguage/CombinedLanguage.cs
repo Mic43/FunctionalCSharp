@@ -47,16 +47,13 @@ abstract class CombinedLanguageInstruction<T> : IFunctor<CombinedLanguageInstruc
     public static IKind<CombinedLanguageInstruction<T>, VNext> Map<TNext, VNext>(
         IKind<CombinedLanguageInstruction<T>, TNext> instruction, Func<TNext, VNext> fun)
     {
-        switch (instruction)
+        return instruction switch
         {
-            case CNewInstruction<T, TNext> cNewInstruction:
-                return new CNewInstruction<T, VNext>(
-                    (NewInstruction<VNext>)NewInstruction.Map(cNewInstruction.Instruction, fun));
-            case CInstruction<T, TNext> cInstruction:
-                return new CInstruction<T, VNext>(
-                    (Instruction<T, VNext>)Instruction<T>.Map(cInstruction.Instruction, fun));
-            default:
-                throw new ArgumentOutOfRangeException(nameof(instruction));
-        }
+            CNewInstruction<T, TNext> cNewInstruction => new CNewInstruction<T, VNext>(
+                (NewInstruction<VNext>)NewInstruction.Map(cNewInstruction.Instruction, fun)),
+            CInstruction<T, TNext> cInstruction => new CInstruction<T, VNext>(
+                (Instruction<T, VNext>)Instruction<T>.Map(cInstruction.Instruction, fun)),
+            _ => throw new ArgumentOutOfRangeException(nameof(instruction))
+        };
     }
 }

@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using FunctionalCSharp.New;
+using FunctionalCSharp.New.Applicatives;
 using FunctionalCSharp.New.Monads;
 using Xunit;
 

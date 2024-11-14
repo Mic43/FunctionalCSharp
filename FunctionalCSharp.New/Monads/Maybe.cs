@@ -10,6 +10,8 @@ public sealed record None<T> : Maybe<T>;
 public sealed record Some<T>(T Value) : Maybe<T>
 {
     public static Some<T> Of(T value) => new(value);
+
+    public void Deconstruct(out T value) => value = Value;
 }
 
 public abstract class Maybe : IMonadPlus<Maybe>
@@ -26,7 +28,7 @@ public abstract class Maybe : IMonadPlus<Maybe>
     public static IKind<Maybe, V> Bind<T, V>(IKind<Maybe, T> monad, Func<T, IKind<Maybe, V>> fun) => monad.To() switch
     {
         None<T> _ => new None<V>(),
-        Some<T> { Value: var v } => fun(v),
+        Some<T> (var v) => fun(v),
         _ => throw new ArgumentException(nameof(monad))
     };
 
@@ -58,13 +60,7 @@ public static class MaybeExt
         return Maybe.Bind(maybe, t => Maybe.Bind(binder(t), v => Maybe.Pure(projection(t, v)))).To();
     }
 
-    public static Maybe<V> Select<T, V>(this Maybe<T> maybe, Func<T, V> mapper)
-    {
-        return Maybe.Map(maybe, mapper).To();
-    }
+    public static Maybe<V> Select<T, V>(this Maybe<T> maybe, Func<T, V> mapper) => Maybe.Map(maybe, mapper).To();
 
-    public static Maybe<T> To<T>(this IKind<Maybe, T> kind)
-    {
-        return (Maybe<T>)kind;
-    }
+    public static Maybe<T> To<T>(this IKind<Maybe, T> kind) => (Maybe<T>)kind;
 }
