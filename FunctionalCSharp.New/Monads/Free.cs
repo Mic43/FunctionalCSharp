@@ -96,7 +96,7 @@ public static class FreeExt
         Func<T, V, Z> projection) where TFunctor : IFunctor<TFunctor>
     {
         return Free<TFunctor>
-            .Bind(free, t => Free<TFunctor>.Bind(binder(t), v => Free<TFunctor>.Pure(projection(t, v)))).To();
+            .Bind(free, t => binder(t).Select(v => projection(t, v))).To();
     }
 
     public static Free<TFunctor, V> Select<TFunctor, T, V>(this Free<TFunctor, T> free, Func<T, V> mapper)

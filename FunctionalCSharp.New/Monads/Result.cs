@@ -34,9 +34,7 @@ public abstract class Result<TError> : IMonad<Result<TError>>
     public static IKind<Result<TError>, V> Bind<T, V>(IKind<Result<TError>, T> monad,
         Func<T, IKind<Result<TError>, V>> fun)
     {
-        Result<T, TError> m = (Result<T, TError>)monad;
-
-        return m switch
+        return monad.To() switch
         {
             Ok<T, TError> (var value) => fun(value),
             Error<T, TError> (var error) => new Error<V, TError>(error),
@@ -48,4 +46,18 @@ public abstract class Result<TError> : IMonad<Result<TError>>
         => IMonad<Result<TError>>.Join(monad);
 
     public static IKind<Result<TError>, T> Pure<T>(T value) => new Ok<T, TError>(value);
+}
+
+public static class ResultExt
+{
+    public static Result<Z, TError> SelectMany<T, V, Z, TError>(this Result<T, TError> result,
+        Func<T, Result<V, TError>> binder,
+        Func<T, V, Z> projection) =>
+        Result<TError>
+            .Bind(result, t => binder(t).Select(v => projection(t, v))).To();
+
+    public static Result<V, TError> Select<T, V, TError>(this Result<T, TError> result, Func<T, V> mapper) =>
+        Result<TError>.Map(result, mapper).To();
+
+    public static Result<T, TError> To<T, TError>(this IKind<Result<TError>, T> kind) => (Result<T, TError>)kind;
 }

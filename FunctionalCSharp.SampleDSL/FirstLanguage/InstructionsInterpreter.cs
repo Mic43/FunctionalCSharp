@@ -15,6 +15,8 @@ public class InstructionsInterpreter : IInstructionsInterpreter
     {
         switch (instruction)
         {
+            case Dynamic<T, TNext> dynamic:
+                return Interpret(dynamic.Program.Invoke());
             case Add<T, TNext> add:
                 return add.Next(add.Arg1 + add.Arg2);
             case If<T, TNext> @if:

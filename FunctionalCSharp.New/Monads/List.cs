@@ -8,6 +8,7 @@ public record List<T>(IEnumerable<T> SourceList) : IKind<List, T>
     public List() : this(Enumerable.Empty<T>())
     {
     }
+
     public IEnumerable<T> SourceList { get; } = SourceList;
 }
 
@@ -67,7 +68,7 @@ public static class ListExt
     public static List<Z> SelectMany<T, V, Z>(this List<T> list, Func<T, List<V>> binder,
         Func<T, V, Z> projection)
     {
-        return List.Bind(list, t => List.Bind(binder(t), v => List.Pure(projection(t, v)))).To();
+        return List.Bind(list, t => binder(t).Select(v => projection(t, v))).To();
     }
 
     public static List<V> Select<T, V>(this List<T> list, Func<T, V> mapper) =>

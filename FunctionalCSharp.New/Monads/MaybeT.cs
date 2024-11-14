@@ -53,18 +53,13 @@ public static class MaybeTExt
         Func<T, MaybeT<TMonad, V>> binder,
         Func<T, V, Z> projection) where TMonad : IMonad<TMonad>
     {
-        return MaybeT<TMonad>
-            .Bind(maybeT, t => MaybeT<TMonad>.Bind(binder(t), v => MaybeT<TMonad>.Pure(projection(t, v)))).To();
+        return MaybeT<TMonad>.Bind(maybeT, t => binder(t).Select(v => projection(t, v))).To();
     }
 
     public static MaybeT<TMonad, V> Select<T, V, TMonad>(this MaybeT<TMonad, T> maybeT, Func<T, V> mapper)
-        where TMonad : IMonad<TMonad>
-    {
-        return MaybeT<TMonad>.Map(maybeT, mapper).To();
-    }
+        where TMonad : IMonad<TMonad> =>
+        MaybeT<TMonad>.Map(maybeT, mapper).To();
 
-    public static MaybeT<TMonad, T> To<T, TMonad>(this IKind<MaybeT<TMonad>, T> kind) where TMonad : IMonad<TMonad>
-    {
-        return (MaybeT<TMonad, T>)kind;
-    }
+    public static MaybeT<TMonad, T> To<T, TMonad>(this IKind<MaybeT<TMonad>, T> kind) where TMonad : IMonad<TMonad> =>
+        (MaybeT<TMonad, T>)kind;
 }

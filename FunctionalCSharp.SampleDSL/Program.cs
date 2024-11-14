@@ -16,11 +16,19 @@ public class Tst
         int b = 2;
         int c = 3;
 
+        Free<Instruction<int>, int> Ask()
+        {
+            return from number in Instructions.Try(
+                    Instructions.Read<int>(),
+                    Instructions.Dynamic(Ask))
+                select number;
+        }
+
         var program =
             from r1 in Instructions.Add(a, b)
             from r2 in Instructions.Mul(r1, c)
             from _ in Instructions.Write(r1)
-            from input in Instructions.Try(Instructions.Read<int>(), Instructions.Const(0))
+            from input in Ask()
             from z in Instructions.If(() => r2 > input,
                 Instructions.Const(a),
                 Instructions.Const(b))

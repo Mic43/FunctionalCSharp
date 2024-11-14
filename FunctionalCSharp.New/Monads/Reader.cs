@@ -31,6 +31,8 @@ public static class ReaderExt
         Func<T, Reader<TEnv, V>> binder, Func<T, V, Z> projection) =>
         new(ReaderTExt.SelectMany(reader, binder, projection));
 
-    public static Reader<TEnv, V> Select<T, V, TEnv>(this Reader<TEnv, T> reader, Func<T, V> mapper) => new(ReaderTExt.Select(reader, mapper));
+    public static Reader<TEnv, V> Select<T, V, TEnv>(this Reader<TEnv, T> reader, Func<T, V> mapper) =>
+        new(ReaderTExt.Select(reader, mapper));
+
     public static Reader<TEnv, T> To<TEnv, T>(this IKind<Reader<TEnv>, T> kind) => (Reader<TEnv, T>)kind;
 }

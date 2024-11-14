@@ -89,13 +89,10 @@ public static class WriterTExt
     public static WriterT<TMonoid, TOut, TMonad, Z> SelectMany<T, V, Z, TMonoid, TOut, TMonad>(
         this WriterT<TMonoid, TOut, TMonad, T> writerT,
         Func<T, WriterT<TMonoid, TOut, TMonad, V>> binder,
-        Func<T, V, Z> projection) where TMonad : IMonad<TMonad> where TMonoid : IMonoid<TMonoid>
-    {
-        return WriterT<TMonoid, TOut, TMonad>
+        Func<T, V, Z> projection) where TMonad : IMonad<TMonad> where TMonoid : IMonoid<TMonoid> =>
+        WriterT<TMonoid, TOut, TMonad>
             .Bind(writerT,
-                t => WriterT<TMonoid, TOut, TMonad>.Bind(binder(t),
-                    v => WriterT<TMonoid, TOut, TMonad>.Pure(projection(t, v)))).To();
-    }
+                t => binder(t).Select(v => projection(t,v))).To();
 
     public static WriterT<TMonoid, TOut, TMonad, V> Select<T, V, TMonoid, TOut, TMonad>(
         this WriterT<TMonoid, TOut, TMonad, T> writerT,

@@ -57,7 +57,8 @@ public static class MaybeExt
     public static Maybe<Z> SelectMany<T, V, Z>(this Maybe<T> maybe, Func<T, Maybe<V>> binder,
         Func<T, V, Z> projection)
     {
-        return Maybe.Bind(maybe, t => Maybe.Bind(binder(t), v => Maybe.Pure(projection(t, v)))).To();
+        return Maybe.Bind(maybe,
+            t => binder(t).Select(v => projection(t, v))).To();
     }
 
     public static Maybe<V> Select<T, V>(this Maybe<T> maybe, Func<T, V> mapper) => Maybe.Map(maybe, mapper).To();

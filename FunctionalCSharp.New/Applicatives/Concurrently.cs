@@ -76,7 +76,6 @@ public abstract class Concurrently : IAlternative<Concurrently>
             }
         );
     }
-
     public static Concurrently<T> FromTask<T>(Func<CancellationToken, T> task) => new(task);
 }
 
