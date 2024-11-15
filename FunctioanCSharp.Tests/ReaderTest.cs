@@ -13,7 +13,7 @@ public class ReaderTest
     {
         Reader<int, string> GetInit(string s)
         {
-            return Reader<int>.Pure(s);
+            return Reader<int>.Pure(s).To();
         }
 
         var reader =

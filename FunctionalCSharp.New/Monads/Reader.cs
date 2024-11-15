@@ -1,6 +1,6 @@
 namespace FunctionalCSharp.New.Monads;
 
-public record Reader<TEnv, T> : ReaderT<TEnv, Identity, T>
+public record Reader<TEnv, T> : ReaderT<TEnv, Identity, T>, IKind<Reader<TEnv>, T>
 {
     internal Reader(Func<TEnv, T> runReader) : base(e => new Identity<T>(runReader(e)))
     {
@@ -13,7 +13,7 @@ public record Reader<TEnv, T> : ReaderT<TEnv, Identity, T>
     public T RunReader(TEnv env) => RunReaderT(env).To().Value;
 }
 
-public abstract class Reader<TEnv>
+public abstract class Reader<TEnv> : IMonad<Reader<TEnv>>
 {
     public static Reader<TEnv, TEnv> Ask() => new(ReaderT<TEnv, Identity>.Ask());
 
@@ -22,7 +22,19 @@ public abstract class Reader<TEnv>
     public static Reader<TEnv, T> Local<T>(Reader<TEnv, T> reader, Func<TEnv, TEnv> modifyEnvFunc) =>
         new(reader.Local(modifyEnvFunc));
 
-    public static Reader<TEnv, T> Pure<T>(T value) => new(ReaderT<TEnv, Identity>.Pure(value).To());
+    public static IKind<Reader<TEnv>, V> Map<T, V>(IKind<Reader<TEnv>, T> f, Func<T, V> fun) =>
+        IMonad<Reader<TEnv>>.Map(f, fun);
+
+    public static IKind<Reader<TEnv>, V> Apply<T, V>(IKind<Reader<TEnv>, T> applicative,
+        IKind<Reader<TEnv>, Func<T, V>> fun) =>
+        IMonad<Reader<TEnv>>.Apply(applicative, fun);
+
+    public static IKind<Reader<TEnv>, V> Bind<T, V>(IKind<Reader<TEnv>, T> monad, Func<T, IKind<Reader<TEnv>, V>> fun) =>
+        new Reader<TEnv, V>(ReaderT<TEnv, Identity>.Bind<T, V>(monad.To(), t => new Reader<TEnv, V>(fun(t).To()))
+            .To());
+
+    public static IKind<Reader<TEnv>, T> Pure<T>(T value) =>
+        new Reader<TEnv, T>(ReaderT<TEnv, Identity>.Pure(value).To());
 }
 
 public static class ReaderExt
