@@ -1,5 +1,6 @@
 using System;
 using FunctionalCSharp.New;
+using FunctionalCSharp.New.Base;
 using FunctionalCSharp.New.Monads;
 using Xunit;
 
@@ -10,7 +11,7 @@ public class TraversableTest
     [Fact]
     public void SomeListTraverseTest()
     {
-        var init = new New.Monads.List<int>(new[] { 1, 2, 3 });
+        var init = new List<int>(new[] { 1, 2, 3 });
         
         var traverse = List.Traverse(init, Some<int>.Of);
         var actual = traverse.To();

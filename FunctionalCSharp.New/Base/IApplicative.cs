@@ -1,4 +1,4 @@
-﻿namespace FunctionalCSharp.New;
+﻿namespace FunctionalCSharp.New.Base;
 
 public interface IApplicative<TApplicative> : IFunctor<TApplicative> where TApplicative : IApplicative<TApplicative>
 {

@@ -1,3 +1,5 @@
+using FunctionalCSharp.New.Base;
+
 namespace FunctionalCSharp.New.Monads;
 
 public record Reader<TEnv, T> : ReaderT<TEnv, Identity, T>, IKind<Reader<TEnv>, T>

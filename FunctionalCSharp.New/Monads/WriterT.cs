@@ -1,3 +1,5 @@
+using FunctionalCSharp.New.Base;
+
 namespace FunctionalCSharp.New.Monads;
 
 /// <summary>

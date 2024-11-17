@@ -1,4 +1,5 @@
-﻿using FunctionalCSharp.New.Monads;
+﻿using FunctionalCSharp.New.Base;
+using FunctionalCSharp.New.Monads;
 
 namespace FunctionalCSharp.New.Applicatives;
 

@@ -1,3 +1,5 @@
+using FunctionalCSharp.New.Base;
+
 namespace FunctionalCSharp.New.Monads;
 
 public record Writer<TMonoid, TOut, T> : WriterT<TMonoid, TOut, Identity, T> where TMonoid : IMonoid<TMonoid>

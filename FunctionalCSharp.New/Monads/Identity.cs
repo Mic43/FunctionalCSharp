@@ -1,3 +1,5 @@
+using FunctionalCSharp.New.Base;
+
 namespace FunctionalCSharp.New.Monads;
 
 public sealed record Identity<T>(T Value) : IKind<Identity, T>;

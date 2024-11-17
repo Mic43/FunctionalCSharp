@@ -1,4 +1,4 @@
-namespace FunctionalCSharp.New;
+namespace FunctionalCSharp.New.Base;
 
 public interface ISemigroup<TSemigroup> where TSemigroup : ISemigroup<TSemigroup>
 {

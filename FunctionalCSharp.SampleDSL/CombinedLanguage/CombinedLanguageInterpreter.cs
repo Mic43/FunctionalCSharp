@@ -1,5 +1,6 @@
 using System.Numerics;
 using FunctionalCSharp.New;
+using FunctionalCSharp.New.Base;
 using FunctionalCSharp.New.Monads;
 using FunctionalCSharp.SampleDSL.FirstLanguage;
 using FunctionalCSharp.SampleDSL.NewLanguage;

@@ -1,4 +1,4 @@
-namespace FunctionalCSharp.New;
+namespace FunctionalCSharp.New.Base;
 
 public interface ITraversable<TTraversable> : IFoldable<TTraversable>, IFunctor<TTraversable>
     where TTraversable : ITraversable<TTraversable>

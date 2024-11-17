@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using FunctionalCSharp.New.Base;
 
 namespace FunctionalCSharp.New.Monads;
 

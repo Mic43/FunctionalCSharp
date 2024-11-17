@@ -1,4 +1,6 @@
-﻿namespace FunctionalCSharp.New.Monads;
+﻿using FunctionalCSharp.New.Base;
+
+namespace FunctionalCSharp.New.Monads;
 
 public sealed record MaybeT<TMonad, T>(IKind<TMonad, Maybe<T>> InnerMonad)
     : IKind<MaybeT<TMonad>, T> where TMonad : IMonad<TMonad>

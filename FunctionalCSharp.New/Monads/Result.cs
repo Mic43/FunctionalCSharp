@@ -1,4 +1,6 @@
-﻿namespace FunctionalCSharp.New.Monads;
+﻿using FunctionalCSharp.New.Base;
+
+namespace FunctionalCSharp.New.Monads;
 
 public abstract record Result<T, TError> : IKind<Result<TError>, T>;
 

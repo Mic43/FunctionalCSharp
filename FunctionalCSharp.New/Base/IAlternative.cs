@@ -1,4 +1,4 @@
-﻿namespace FunctionalCSharp.New;
+﻿namespace FunctionalCSharp.New.Base;
 
 public interface IAlternative<TAlternative> : IApplicative<TAlternative> where TAlternative : IAlternative<TAlternative>
 {

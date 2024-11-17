@@ -1,4 +1,4 @@
-﻿namespace FunctionalCSharp.New;
+﻿namespace FunctionalCSharp.New.Base;
 
 public interface IFunctor<TFunctor> where TFunctor : IFunctor<TFunctor>
 {

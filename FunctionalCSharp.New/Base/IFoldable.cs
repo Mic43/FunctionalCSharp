@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-
-namespace FunctionalCSharp.New;
+﻿namespace FunctionalCSharp.New.Base;
 
 public interface IFoldable<TFoldable> where TFoldable : IFoldable<TFoldable>
 {

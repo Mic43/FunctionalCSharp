@@ -1,4 +1,4 @@
-﻿namespace FunctionalCSharp.New;
+﻿namespace FunctionalCSharp.New.Base;
 
 public interface IMonad<TMonad> : IApplicative<TMonad> where TMonad : IMonad<TMonad>
 {

@@ -1,3 +1,5 @@
+using FunctionalCSharp.New.Base;
+
 namespace FunctionalCSharp.New.Monads;
 
 public abstract record Free<TFunctor, T> : IKind<Free<TFunctor>, T> where TFunctor : IFunctor<TFunctor>
