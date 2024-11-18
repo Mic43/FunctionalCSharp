@@ -45,7 +45,7 @@ public class Tst
             from _ in NewInstructions.WriteLine("aaaa" + vv).ToCombined<int, Unit>()
             select z;
 
-        CombinedLanguageInterpreter i = new CombinedLanguageInterpreter(interpreter, new NewInstructionsInterpreter());
+        var i = new CombinedLanguageInterpreter(interpreter, new NewInstructionsInterpreter());
         result = i.Interpret(program2);
         Console.WriteLine(result);
 

@@ -7,7 +7,7 @@ namespace FunctionalCSharp.New.Monads;
 /// </summary>
 /// <typeparam name="TMonoid">type of the monoid to use ase the accumulator eg. List</typeparam>
 /// <typeparam name="TOut">type of the accumulator type parameter</typeparam>
-/// <typeparam name="TMonad">type of the source monad </typeparam>
+/// <typeparam name="TMonad">type of the source monad</typeparam>
 /// <typeparam name="T">type of the monad's parameter</typeparam>
 /// 
 public record WriterT<TMonoid, TOut, TMonad, T>
