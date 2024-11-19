@@ -2,16 +2,27 @@ using FunctionalCSharp.New.Base;
 
 namespace FunctionalCSharp.New.Monads;
 
+/// <summary>
+/// Free monad data type
+/// </summary>
+/// <typeparam name="TFunctor">Functor that free monads is constructed from</typeparam>
+/// <typeparam name="T">Type of the result of the computation</typeparam>
 public abstract record Free<TFunctor, T> : IKind<Free<TFunctor>, T> where TFunctor : IFunctor<TFunctor>
 {
-    public IKind<Free<TFunctorB>, T> Hoist<TFunctorB>(INaturalTransformation<TFunctor, TFunctorB> fun)
+    /// <summary>
+    /// Produces new instance with modified functor type 
+    /// </summary>
+    /// <param name="naturalTransformation">transformation between functors to used to produce new free monad instance</param>
+    /// <typeparam name="TFunctorB">new functor type</typeparam>
+    /// <returns>instance of the free monad with modified functor type, according to provided </returns>natural transformation between functors
+    public IKind<Free<TFunctorB>, T> Hoist<TFunctorB>(INaturalTransformation<TFunctor, TFunctorB> naturalTransformation)
         where TFunctorB : IFunctor<TFunctorB>
     {
         return this switch
         {
-            Pure<TFunctor, T> pure => Free<TFunctorB>.Pure(pure.Value),
-            Roll<TFunctor, T> roll => new Roll<TFunctorB, T>(
-                fun.Transform(TFunctor.Map(roll.Free, next => next.Hoist(fun).To()))),
+            Pure<TFunctor, T>(var value) => Free<TFunctorB>.Pure(value),
+            Roll<TFunctor, T>(var free) => new Roll<TFunctorB, T>(
+                naturalTransformation.Transform(TFunctor.Map(free, next => next.Hoist(naturalTransformation).To()))),
             _ => throw new ArgumentOutOfRangeException()
         };
     }
@@ -36,6 +47,10 @@ public sealed record Roll<TFunctor, T>
     public void Deconstruct(out IKind<TFunctor, Free<TFunctor, T>> free) => free = Free;
 }
 
+/// <summary>
+/// Free monad 'typeclass' implementation
+/// </summary>
+/// <typeparam name="TFunctor">Functor that free monads is to be constructed from</typeparam>
 public abstract class Free<TFunctor> : IMonad<Free<TFunctor>> where TFunctor : IFunctor<TFunctor>
 {
     public static IKind<Free<TFunctor>, V> Map<T, V>(IKind<Free<TFunctor>, T> f, Func<T, V> fun) =>
@@ -48,18 +63,13 @@ public abstract class Free<TFunctor> : IMonad<Free<TFunctor>> where TFunctor : I
     public static IKind<Free<TFunctor>, V> Bind<T, V>(IKind<Free<TFunctor>, T> monad,
         Func<T, IKind<Free<TFunctor>, V>> fun)
     {
-        switch (monad.To())
+        return monad.To() switch
         {
-            case Pure<TFunctor, T> (var value):
-                return fun(value);
-            case Roll<TFunctor, T> (var free):
-            {
-                var ff = (IKind<Free<TFunctor>, T> f) => Bind(f, fun).To();
-                return new Roll<TFunctor, V>(TFunctor.Map(free, ff));
-            }
-            default:
-                throw new ArgumentOutOfRangeException(nameof(monad));
-        }
+            Pure<TFunctor, T> (var value) => fun(value),
+            Roll<TFunctor, T> (var free) =>
+                new Roll<TFunctor, V>(TFunctor.Map(free, f => Bind(f, fun).To())),
+            _ => throw new ArgumentOutOfRangeException(nameof(monad))
+        };
     }
 
     public static IKind<Free<TFunctor>, T> Pure<T>(T value) => new Pure<TFunctor, T>(value);

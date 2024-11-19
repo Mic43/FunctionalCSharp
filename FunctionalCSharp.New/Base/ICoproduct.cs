@@ -18,7 +18,11 @@ public class Coproduct<TLeft, TRight, T> : IKind<Coproduct<TLeft, TRight>, T>
     public static Coproduct<TLeft, TRight, T> Right(IKind<TRight, T> right) =>
         new(new Error<IKind<TLeft, T>, IKind<TRight, T>>(right));
 }
-
+/// <summary>
+/// Coproduct of two functors is a functor too
+/// </summary>
+/// <typeparam name="TLeft"></typeparam>
+/// <typeparam name="TRight"></typeparam>
 public abstract class Coproduct<TLeft, TRight> : IFunctor<Coproduct<TLeft, TRight>>
     where TLeft : IFunctor<TLeft> where TRight : IFunctor<TRight>
 {
