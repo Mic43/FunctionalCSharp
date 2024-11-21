@@ -2,6 +2,7 @@ using System;
 using System.Numerics;
 using FunctionalCSharp.New;
 using FunctionalCSharp.New.Monads;
+using FunctionalCSharp.New.Monads.Free;
 using FunctionalCSharp.SampleDSL;
 using FunctionalCSharp.SampleDSL.FirstLanguage;
 using Xunit;
