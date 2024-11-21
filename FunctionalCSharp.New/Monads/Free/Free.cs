@@ -1,6 +1,6 @@
 using FunctionalCSharp.New.Base;
 
-namespace FunctionalCSharp.New.Monads;
+namespace FunctionalCSharp.New.Monads.Free;
 
 /// <summary>
 /// Free monad data type
