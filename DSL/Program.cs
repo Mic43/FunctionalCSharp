@@ -6,6 +6,7 @@ using DSL.HttpRest.Interpreters;
 using DSL.Logging;
 using DSL.Logging.Interpreters;
 using FunctionalCSharp.New.Monads.Free;
+using FunctionalCSharp.New.Monads.Free.Interpreters;
 using static DSL.HttpRest.Helpers;
 using static DSL.Logging.Helpers;
 
@@ -14,7 +15,6 @@ var copyCommand = (string addressSource, string addressDestination) =>
     from response in HttpGet(addressSource)
     from res in HttpPost(addressDestination, response.Content)
     select res.ToString();
-
 
 var copyCommandWithLog = (string addressSource, string addressDestination) =>
     from response in HttpGet(addressSource).ToCombined()

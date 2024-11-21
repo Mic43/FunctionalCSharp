@@ -1,6 +1,7 @@
 using FunctionalCSharp.New.Base;
 using FunctionalCSharp.New.Monads;
 using FunctionalCSharp.New.Monads.Free;
+using FunctionalCSharp.New.Monads.Free.Interpreters;
 
 namespace DSL.HttpRest.Interpreters;
 
@@ -29,35 +30,3 @@ class CommandsInterpreterSync<T> : FreeInterpreterBase<T,HttpRestLang>, IDisposa
         _httpClient.Dispose();
     }
 }
-
-// class CommandsInterpreterAsync
-// {
-//     public virtual Task<HttpRequestMessage> Interpret(Free<HttpRest, Task<HttpRequestMessage>> program)
-//     {
-//         switch (program)
-//         {
-//             case Pure<HttpRest, Task<HttpRequestMessage>>(var value):
-//                 return value;
-//             case Roll<HttpRest, Task<HttpRequestMessage>>(var free):
-//                 var f = (HttpRestCommand<Free<HttpRest, Task<HttpRequestMessage>>>)free;
-//                 switch (f)
-//                 {
-//                     case DeleteCommand<Free<HttpRest, Task<HttpRequestMessage>>> deleteCommand:
-//                         Free<HttpRest, Task<HttpRequestMessage>>
-//                         return Interpret(deleteCommand.Next());
-//                         break;
-//                     case GetCommand<Free<HttpRest, Task<HttpRequestMessage>>> getCommand:
-//                         break;
-//                     case PostCommand<Free<HttpRest, Task<HttpRequestMessage>>> postCommand:
-//                         break;
-//                     case PutCommand<Free<HttpRest, Task<HttpRequestMessage>>> putCommand:
-//                         break;
-//                     default:
-//                         throw new ArgumentOutOfRangeException(nameof(f));
-//                 }
-//
-//             default:
-//                 throw new ArgumentOutOfRangeException(nameof(program));
-//         }
-//     }
-// }

@@ -1,5 +1,3 @@
-using DSL.HttpRest;
-using FunctionalCSharp.New;
 using FunctionalCSharp.New.Monads.Free;
 
 namespace DSL.Logging;

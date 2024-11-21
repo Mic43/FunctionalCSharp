@@ -1,6 +1,6 @@
 using FunctionalCSharp.New.Base;
 
-namespace FunctionalCSharp.New.Monads.Free;
+namespace FunctionalCSharp.New.Monads.Free.Interpreters;
 
 public abstract class FreeInterpreterBase<TOutput, Functor> : IFreeInterpreter<TOutput, Functor>
     where Functor : IFunctor<Functor>

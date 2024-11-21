@@ -8,13 +8,10 @@ namespace DSL;
 public static class CombinedHelper
 {
     public static Free<Coproduct<HttpRestLang, LogLang>, HttpResponseMessage> ToCombined(
-        this Free<HttpRestLang, HttpResponseMessage> free)
-    {
-        return free.ToCoproduct<HttpResponseMessage, HttpRestLang, LogLang>();
-    }
+        this Free<HttpRestLang, HttpResponseMessage> free) =>
+        free.ToCoproduct<HttpResponseMessage, HttpRestLang, LogLang>();
+
     public static Free<Coproduct<HttpRestLang, LogLang>, HttpResponseMessage> ToCombined(
-        this Free<LogLang, HttpResponseMessage> free)
-    {
-        return free.ToCoproduct<HttpResponseMessage, HttpRestLang, LogLang>();
-    }
+        this Free<LogLang, HttpResponseMessage> free) =>
+        free.ToCoproduct<HttpResponseMessage, HttpRestLang, LogLang>();
 }
