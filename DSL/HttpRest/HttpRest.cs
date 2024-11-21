@@ -10,10 +10,12 @@ internal abstract class HttpRest : IFunctor<HttpRest>
     {
         return (HttpRestCommand<T>)f switch
         {
-            DeleteCommand<T>(var address, var next) => new DeleteCommand<V>(address, next.Compose(fun)),
-            GetCommand<T>(var address, var next) => new GetCommand<V>(address, next.Compose(fun)),
-            PostCommand<T>(var address, var content, var next) => new PostCommand<V>(address, content,
-                next.Compose(fun)),
+            DeleteCommand<T>(var address, var next) => 
+                new DeleteCommand<V>(address, next.Compose(fun)),
+            GetCommand<T>(var address, var next) => 
+                new GetCommand<V>(address, next.Compose(fun)),
+            PostCommand<T>(var address, var content, var next) =>
+                new PostCommand<V>(address, content, next.Compose(fun)),
             PutCommand<T>(var address, var content, var next) =>
                 new PutCommand<V>(address, content, next.Compose(fun)),
             _ => throw new ArgumentOutOfRangeException(nameof(f))

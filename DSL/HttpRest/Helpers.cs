@@ -1,22 +1,24 @@
 using FunctionalCSharp.New.Monads;
+using FunctionalCSharp.New.Monads.Free;
 
 namespace DSL.HttpRest;
 
 static class Helpers
 {
-    public static Free<HttpRest, Task<HttpResponseMessage>> Get(string address)
+    public static Free<HttpRest, HttpResponseMessage> HttpGet(string address)
         => Free<HttpRest>.LiftF(
-            new GetCommand<Task<HttpResponseMessage>>(address, a => a)).To();
+            new GetCommand<HttpResponseMessage>(address, a => a)).To();
 
-    public static Free<HttpRest, Task<HttpResponseMessage>> Post(string address, HttpContent httpContent)
+    public static Free<HttpRest, HttpResponseMessage> HttpPost(string address, HttpContent httpContent)
         => Free<HttpRest>.LiftF(
-            new PostCommand<Task<HttpResponseMessage>>(address, httpContent, a => a)).To();
+            new PostCommand<HttpResponseMessage>(address, httpContent, a => a)).To();
 
-    public static Free<HttpRest, Task<HttpResponseMessage>> Put(string address, HttpContent httpContent)
+    public static Free<HttpRest, HttpResponseMessage> HttpPut(string address, HttpContent httpContent)
         => Free<HttpRest>.LiftF(
-            new PutCommand<Task<HttpResponseMessage>>(address, httpContent, a => a)).To();
+            new PutCommand<HttpResponseMessage>(address, httpContent, a => a)).To();
 
-    public static Free<HttpRest, Task<HttpResponseMessage>> Delete(string address)
+    public static Free<HttpRest, HttpResponseMessage> HttpDelete(string address)
         => Free<HttpRest>.LiftF(
-            new DeleteCommand<Task<HttpResponseMessage>>(address, a => a)).To();
+            new DeleteCommand<HttpResponseMessage>(address, a => a)).To();
+    
 }
