@@ -4,9 +4,9 @@ using FunctionalCSharp.New.Base;
 
 namespace DSL.HttpRest;
 
-internal abstract class HttpRest : IFunctor<HttpRest>
+public abstract class HttpRestLang : IFunctor<HttpRestLang>
 {
-    public static IKind<HttpRest, V> Map<T, V>(IKind<HttpRest, T> f, Func<T, V> fun)
+    public static IKind<HttpRestLang, V> Map<T, V>(IKind<HttpRestLang, T> f, Func<T, V> fun)
     {
         return (HttpRestCommand<T>)f switch
         {

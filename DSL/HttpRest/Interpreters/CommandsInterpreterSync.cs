@@ -4,11 +4,11 @@ using FunctionalCSharp.New.Monads.Free;
 
 namespace DSL.HttpRest.Interpreters;
 
-class CommandsInterpreterSync : FreeInterpreterBase<HttpResponseMessage,HttpRest>, IDisposable
+class CommandsInterpreterSync : FreeInterpreterBase<HttpResponseMessage,HttpRestLang>, IDisposable
 {
     private readonly HttpClient _httpClient = new();
 
-    public override TNext InterpretSingle<TNext>(IKind<HttpRest, TNext> command)
+    public override TNext InterpretSingle<TNext>(IKind<HttpRestLang, TNext> command)
     {
         return (HttpRestCommand<TNext>)command switch
         {

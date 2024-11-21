@@ -6,6 +6,6 @@ namespace DSL.Logging;
 
 public static class Helpers
 {
-    public static Free<Log, T> Log<T>(string message) where T : new() => Free<Log>.LiftF(
+    public static Free<LogLang, T> Log<T>(string message) where T : new() => Free<LogLang>.LiftF(
         new LogCommand<T>(message, () => new T())).To();
 }

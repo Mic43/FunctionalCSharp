@@ -3,12 +3,12 @@ namespace FunctionalCSharp.New.Monads.Free;
 
 public static class CombinedFreeHelper
 {
-    public static Free<Coproduct<TLanguageA, TLanguageB>, TNext> ToCombined<TNext, TLanguageA, TLanguageB>(
+    public static Free<Coproduct<TLanguageA, TLanguageB>, TNext> ToCoproduct<TNext, TLanguageA, TLanguageB>(
         this Free<TLanguageA, TNext> program) where TLanguageA : IFunctor<TLanguageA>
         where TLanguageB : IFunctor<TLanguageB> =>
         program.Hoist(new LanguageATransform<TLanguageA, TLanguageB>()).To();
 
-    public static Free<Coproduct<TLanguageA, TLanguageB>, TNext> ToCombined<TNext, TLanguageA, TLanguageB>(
+    public static Free<Coproduct<TLanguageA, TLanguageB>, TNext> ToCoproduct<TNext, TLanguageA, TLanguageB>(
         this Free<TLanguageB, TNext> program) where TLanguageA : IFunctor<TLanguageA>
         where TLanguageB : IFunctor<TLanguageB> =>
         program.Hoist(new LanguageBTransform<TLanguageA, TLanguageB>()).To();

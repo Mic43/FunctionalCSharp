@@ -2,9 +2,9 @@ using FunctionalCSharp.New.Base;
 
 namespace DSL.Logging;
 
-public abstract class Log : IFunctor<Log>
+public abstract class LogLang : IFunctor<LogLang>
 {
-    public static IKind<Log, V> Map<T, V>(IKind<Log, T> f, Func<T, V> fun)
+    public static IKind<LogLang, V> Map<T, V>(IKind<LogLang, T> f, Func<T, V> fun)
     {
         var logCommand = (LogCommand<T>)f;
         return new LogCommand<V>(logCommand.Message, () => fun(logCommand.Next()));

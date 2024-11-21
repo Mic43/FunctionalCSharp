@@ -2,7 +2,7 @@ using FunctionalCSharp.New.Base;
 
 namespace DSL.HttpRest;
 
-public abstract record HttpRestCommand<TNext>(string Address) : IKind<HttpRest, TNext>;
+public abstract record HttpRestCommand<TNext>(string Address) : IKind<HttpRestLang, TNext>;
 
 public record GetCommand<TNext>(string Address, Func<HttpResponseMessage, TNext> Next)
     : HttpRestCommand<TNext>(Address)
