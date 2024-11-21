@@ -13,27 +13,27 @@ using static DSL.Logging.Helpers;
 var copyCommand = (string addressSource, string addressDestination) =>
     from response in HttpGet(addressSource)
     from res in HttpPost(addressDestination, response.Content)
-    select res;
+    select res.ToString();
 
 
 var copyCommandWithLog = (string addressSource, string addressDestination) =>
     from response in HttpGet(addressSource).ToCombined()
     from _ in Log<HttpResponseMessage>(response.ToString()).ToCombined()
     from res in HttpPost(addressDestination, response.Content).ToCombined()
-    select res;
+    select res.ToString();
 
-using CommandsInterpreterSync interpreter = new CommandsInterpreterSync();
-var logInterpreter = new ConsoleLogInterpreter<HttpResponseMessage>();
+using CommandsInterpreterSync<string> interpreter = new CommandsInterpreterSync<string>();
+var logInterpreter = new ConsoleLogInterpreter<string>();
 
 var combinedInterpreter =
-    new CombinedLanguageInterpreter<HttpResponseMessage, HttpRestLang, LogLang>(interpreter, logInterpreter);
+     new CombinedLanguageInterpreter<string, HttpRestLang, LogLang>(interpreter, logInterpreter);
 
 
 var result = interpreter.Interpret(
     copyCommand("https://httpbin.org/get", "https://httpbin.org/post"));
 
 var result2 = combinedInterpreter.Interpret(
-    copyCommandWithLog("https://httpbin.org/get", "https://httpbin.org/post"));
+     copyCommandWithLog("https://httpbin.org/get", "https://httpbin.org/post"));
 
 
 Console.WriteLine(result2);

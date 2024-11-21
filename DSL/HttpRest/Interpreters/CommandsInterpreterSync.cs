@@ -4,7 +4,7 @@ using FunctionalCSharp.New.Monads.Free;
 
 namespace DSL.HttpRest.Interpreters;
 
-class CommandsInterpreterSync : FreeInterpreterBase<HttpResponseMessage,HttpRestLang>, IDisposable
+class CommandsInterpreterSync<T> : FreeInterpreterBase<T,HttpRestLang>, IDisposable
 {
     private readonly HttpClient _httpClient = new();
 
