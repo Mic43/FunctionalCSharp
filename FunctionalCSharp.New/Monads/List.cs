@@ -58,6 +58,9 @@ public abstract class List : IMonadPlus<List>, ITraversable<List>, IMonoid<List>
     public static IKind<List, T> Combine<T>(IKind<List, T> v1, IKind<List, T> v2) => Append(v1, v2);
 
     public static IKind<List, T> Identity<T>() => Empty<T>();
+    
+    public static IKind<List, T> Join<T>(IKind<List, IKind<List, T>> monad) => IMonad<List>.Join(monad);
+
 }
 
 public static class ListExt
