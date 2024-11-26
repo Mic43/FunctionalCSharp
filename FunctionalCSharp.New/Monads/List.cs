@@ -27,10 +27,8 @@ public abstract class List : IMonadPlus<List>, ITraversable<List>, IMonoid<List>
 
     public static IKind<List, T> Pure<T>(T value) => new List<T>(Enumerable.Repeat(value, 1));
 
-    public static IKind<List, T> Append<T>(IKind<List, T> a, IKind<List, T> b)
-    {
-        return new List<T>(a.To().SourceList.Union(b.To().SourceList));
-    }
+    public static IKind<List, T> Append<T>(IKind<List, T> a, IKind<List, T> b) =>
+        new List<T>(a.To().SourceList.Union(b.To().SourceList));
 
     public static IKind<List, T> Empty<T>() => new List<T>(Enumerable.Empty<T>());
 

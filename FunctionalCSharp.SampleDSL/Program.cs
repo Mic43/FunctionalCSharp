@@ -24,6 +24,13 @@ public class Tst
                     Instructions.Dynamic(Ask))
                 select number;
         }
+        Free<Instruction<int>, int> Ask2()
+        {
+            var z = 
+                from number in Instructions.Read<int>()
+                select number;
+            return Free<Instruction<int>>.Bind(z, r => Ask2()).To();
+        }
 
         var program =
             from r1 in Instructions.Add(a, b)

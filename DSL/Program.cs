@@ -5,11 +5,11 @@ using DSL.HttpRest;
 using DSL.HttpRest.Interpreters;
 using DSL.Logging;
 using DSL.Logging.Interpreters;
+using FunctionalCSharp.New.Base;
 using FunctionalCSharp.New.Monads.Free;
 using FunctionalCSharp.New.Monads.Free.Interpreters;
 using static DSL.HttpRest.Helpers;
 using static DSL.Logging.Helpers;
-
 
 var copyCommand = (string addressSource, string addressDestination) =>
     from response in HttpGet(addressSource)
@@ -21,6 +21,7 @@ var copyCommandWithLog = (string addressSource, string addressDestination) =>
     from _ in Log<HttpResponseMessage>(response.ToString()).ToCombined()
     from res in HttpPost(addressDestination, response.Content).ToCombined()
     select res.ToString();
+
 
 using CommandsInterpreterSync<string> interpreter = new CommandsInterpreterSync<string>();
 var logInterpreter = new ConsoleLogInterpreter<string>();
