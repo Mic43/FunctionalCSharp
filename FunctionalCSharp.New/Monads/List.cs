@@ -61,6 +61,12 @@ public abstract class List : IMonadPlus<List>, ITraversable<List>, IMonoid<List>
     
     public static IKind<List, T> Join<T>(IKind<List, IKind<List, T>> monad) => IMonad<List>.Join(monad);
 
+    public static IKind<TMonadPlus, T> MSum<TMonadPlus, T>(IKind<List, IKind<TMonadPlus, T>> foldable)
+        where TMonadPlus : IMonadPlus<TMonadPlus> =>
+        IFoldable<List>.MSum(foldable);
+    public static IKind<TAlternative, T> ASum<TAlternative, T>(IKind<List, IKind<TAlternative, T>> foldable)
+        where TAlternative : IAlternative<TAlternative> =>
+        IFoldable<List>.ASum(foldable);
 }
 
 public static class ListExt

@@ -15,7 +15,14 @@ public record Async<T> : IKind<Async, T>
     {
         this.AsyncJob = AsyncJob;
     }
+
     public static Async<T> FromResult(T result) => (Async<T>)Async.Pure(result);
+
+    public static Async<T> FromTask(Task<T> task)
+    {
+        return new Async<T>(() => task.Result);
+    }
+
     public T Run() => AsyncJob();
 }
 
@@ -45,8 +52,23 @@ public abstract class Async : IMonad<Async>
 
 public static class AsyncExt
 {
+    public static Async<Z> SelectMany<T, V, Z>(this Async<T> async, Func<T, Async<V>> binder,
+        Func<T, V, Z> projection)
+    {
+        return Async.Bind(async,
+            t => binder(t).Select(v => projection(t, v))).To();
+    }
+
+    public static Async<V> Select<T, V>(this Async<T> async, Func<T, V> mapper) => Async.Map(async, mapper).To();
+
     public static Async<T> To<T>(this IKind<Async, T> kind)
     {
         return (Async<T>)kind;
+    }
+    
+
+    public static Async<T> ToAsync<T>(this Task<T> task)
+    {
+        return Async<T>.FromTask(task);
     }
 }
