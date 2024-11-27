@@ -10,13 +10,18 @@ public record ListT<TMonad, T> : IKind<ListT<TMonad>, T> where TMonad : IMonad<T
     public static ListT<TMonad, T> FromStep(ListTStep listTStep) => Of(TMonad.Pure(listTStep));
     public IKind<TMonad, ListTStep> Next { get; }
 
-    public IKind<TMonad, Unit> Run() =>
+    public IKind<TMonad, Unit> RunListT() =>
         TMonad.Bind(Next, step => step switch
         {
-            Cons<TMonad, T>(_, var rest) => rest.Run(),
+            Cons<TMonad, T>(_, var rest) => rest.RunListT(),
             Nil<TMonad> _ => TMonad.Pure(Unit.Instance()),
             _ => throw new ArgumentOutOfRangeException(nameof(step))
         });
+          
+    public static ListT<TMonad, T> operator +(ListT<TMonad, T> left, ListT<TMonad, T> right)
+    {
+        return ListT<TMonad>.Append(left, right).To();
+    }
 }
 
 public abstract class ListT<TMonad> : IMonadPlus<ListT<TMonad>> where TMonad : IMonad<TMonad>
@@ -70,4 +75,5 @@ public abstract class ListT<TMonad> : IMonadPlus<ListT<TMonad>> where TMonad : I
     public static IKind<ListT<TMonad>, T> Lift<T>(IKind<TMonad, T> monad) =>
         ListT<TMonad, T>.Of(TMonad.Map(monad,
             t => ListTStep.Cons(t, ListT<TMonad, T>.FromStep(ListTStep.Nil<TMonad>()))));
+    
 }

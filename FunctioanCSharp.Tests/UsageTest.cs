@@ -1,24 +1,10 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Numerics;
-using System.Threading.Channels;
-using System.Threading.Tasks;
-using FunctionalCSharp.New;
-using FunctionalCSharp.New.Applicatives;
 using FunctionalCSharp.New.Monads;
 using FunctionalCSharp.New.Monads.ListT;
-using Microsoft.FSharp.Core;
-using Unit = FunctionalCSharp.New.Unit;
+using static FunctionalCSharp.New.Utils;
 
 namespace FunctionalCSharp.Tests;
-
-interface IInterface
-{
-    static virtual int Z() => 1;
-}
 
 public class Test
 {
@@ -38,43 +24,24 @@ public class Test
             yield return @"http://bing.com";
         }
 
-        //
-        // var a = ListT<Async>.Append(
-        //     ListT<Async>.Pure("aaaaa"),
-        //     ListT<Async>.Pure("bbbbb")).To();
-        // var r = 
-        //     from x in a
-        //     select Utils.Log(x);
-        //
-        // r.Run().To().Run();
-
-        //
         var client = new HttpClient();
-        //
+
         var list = new New.Monads.List<string>(GetAddresses());
-        var list1 = from c in list
-            select ListT<Async>.Pure(c);
-        
-        var mSum = List.MSum(list1).To();
-        //
-        // var x = 
-        //     from a in mSum
-        //     select Utils.Log(a);
-        //
-        // x.Run().To().Run();
 
         var res =
-            from a in mSum
-            // from b in ListT<Async>.Lift(Task.Run(() => client.GetStringAsync(a)).ToAsync()).To()
+            from a in
+                List.MSum(from c in list
+                    select ListT<Async>.Pure(c)).To()
             from b in ListT<Async>.Lift(
                 client.GetStringAsync(a).ToAsync()
             ).To()
             select (a, b.Length);
-        
-        var x = from z in res
-            select Utils.Log(z);
-        var async = x.Run();
-        
+
+        var x =
+            from z in res
+            select Log(z);
+        var async = x.RunListT();
+
         async.To().Run();
 
 
