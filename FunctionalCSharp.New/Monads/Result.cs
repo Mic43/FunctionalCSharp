@@ -5,6 +5,11 @@ namespace FunctionalCSharp.New.Monads;
 public abstract record Result<T, TError> : IKind<Result<TError>, T>
 {
     public abstract V Either<V>(Func<T, V> okFunction, Func<TError, V> errorFunction);
+
+    public static Result<T, TError> Ok(T resultValue) => new Ok<T, TError>(resultValue);
+    public static Result<T, TError> Error(TError errorValue) => new Error<T, TError>(errorValue);
+
+    public abstract T DefaultIfError(T value);
 }
 
 public sealed record Ok<T, TError>(T ResultValue) : Result<T, TError>
@@ -13,7 +18,9 @@ public sealed record Ok<T, TError>(T ResultValue) : Result<T, TError>
     {
         resultValue = ResultValue;
     }
+
     public override V Either<V>(Func<T, V> okFunction, Func<TError, V> errorFunction) => okFunction(ResultValue);
+    public override T DefaultIfError(T value) => ResultValue;
 }
 
 public sealed record Error<T, TError>(TError ErrorValue) : Result<T, TError>
@@ -24,6 +31,7 @@ public sealed record Error<T, TError>(TError ErrorValue) : Result<T, TError>
     }
 
     public override V Either<V>(Func<T, V> okFunction, Func<TError, V> errorFunction) => errorFunction(ErrorValue);
+    public override T DefaultIfError(T value) => value;
 }
 
 public abstract class Result<TError> : IMonad<Result<TError>>

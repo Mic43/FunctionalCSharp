@@ -24,6 +24,21 @@ public record Async<T> : IKind<Async, T>
     }
 
     public T Run() => AsyncJob();
+
+    public Async<Result<T, Exception>> Catch()
+    {
+        return new Async<Result<T, Exception>>(() =>
+        {
+            try
+            {
+                return Result<T, Exception>.Ok(Run());
+            }
+            catch (Exception e)
+            {
+                return Result<T, Exception>.Error(e);
+            }
+        });
+    }
 }
 
 public abstract class Async : IMonad<Async>
@@ -48,6 +63,8 @@ public abstract class Async : IMonad<Async>
 
     public static IKind<Async, T> Pure<T>(T value) => new Async<T>(() => value);
     public static T Run<T>(IKind<Async, T> async) => ((Async<T>)async).Run();
+
+    public static Async<Result<T, Exception>> Catch<T>(Async<T> async) => async.Catch();
 }
 
 public static class AsyncExt
@@ -65,7 +82,6 @@ public static class AsyncExt
     {
         return (Async<T>)kind;
     }
-    
 
     public static Async<T> ToAsync<T>(this Task<T> task)
     {

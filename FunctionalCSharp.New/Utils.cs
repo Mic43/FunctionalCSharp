@@ -1,5 +1,4 @@
-﻿using FunctionalCSharp.New.Base;
-using FunctionalCSharp.New.Monads;
+﻿using FunctionalCSharp.New.Monads;
 
 namespace FunctionalCSharp.New;
 
@@ -16,11 +15,5 @@ public static class Utils
     {
         Console.WriteLine(value);
         return value;
-    }
-
-    public static IKind<TMonadPlus, T> When<TMonadPlus, T>(bool condition, IKind<TMonadPlus, T> monad)
-        where TMonadPlus : IMonadPlus<TMonadPlus>
-    {
-        return condition ? monad : TMonadPlus.Empty<T>();
     }
 }
