@@ -11,7 +11,8 @@ namespace FunctionalCSharp.New.Monads;
 /// <typeparam name="T">type of the monad's parameter</typeparam>
 /// 
 public record WriterT<TMonoid, TOut, TMonad, T>
-    : IKind<WriterT<TMonoid, TOut, TMonad>, T> where TMonad : IMonad<TMonad>
+    : IKind<WriterT<TMonoid, TOut, TMonad>, T>
+    where TMonad : IMonad<TMonad>
     where TMonoid : IMonoid<TMonoid>
 {
     public IKind<TMonad, (IKind<TMonoid, TOut>, T)> RunWriterT { get; }
@@ -34,7 +35,9 @@ public record WriterT<TMonoid, TOut, TMonad, T>
         new(TMonad.Map(RunWriterT, tuple => (fun(tuple.Item1), tuple.Item2)));
 }
 
-public abstract class WriterT<TMonoid, TOut, TMonad> : IMonad<WriterT<TMonoid, TOut, TMonad>>
+public abstract class WriterT<TMonoid, TOut, TMonad> :
+    IMonad<WriterT<TMonoid, TOut, TMonad>>,
+    IMonadTransformer<WriterT<TMonoid, TOut, TMonad>, TMonad>
     where TMonad : IMonad<TMonad> where TMonoid : IMonoid<TMonoid>
 {
     public static IKind<WriterT<TMonoid, TOut, TMonad>, V> Map<T, V>(IKind<WriterT<TMonoid, TOut, TMonad>, T> f,
@@ -94,7 +97,7 @@ public static class WriterTExt
         Func<T, V, Z> projection) where TMonad : IMonad<TMonad> where TMonoid : IMonoid<TMonoid> =>
         WriterT<TMonoid, TOut, TMonad>
             .Bind(writerT,
-                t => binder(t).Select(v => projection(t,v))).To();
+                t => binder(t).Select(v => projection(t, v))).To();
 
     public static WriterT<TMonoid, TOut, TMonad, V> Select<T, V, TMonoid, TOut, TMonad>(
         this WriterT<TMonoid, TOut, TMonad, T> writerT,

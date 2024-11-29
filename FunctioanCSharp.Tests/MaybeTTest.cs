@@ -24,7 +24,7 @@ public class MaybeTTest
             from c in MaybeT<Async>.Lift(DoSthC(b)).To()
             select c;
 
-        var result = maybeT.InnerMonad.To().Run();
+        var result = maybeT.RunMaybeT.To().Run();
 
         switch (result)
         {

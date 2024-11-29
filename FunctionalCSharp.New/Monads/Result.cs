@@ -10,6 +10,7 @@ public abstract record Result<T, TError> : IKind<Result<TError>, T>
     public static Result<T, TError> Error(TError errorValue) => new Error<T, TError>(errorValue);
 
     public abstract T DefaultIfError(T value);
+    public abstract Maybe<T> ToMaybe();
 }
 
 public sealed record Ok<T, TError>(T ResultValue) : Result<T, TError>
@@ -21,6 +22,7 @@ public sealed record Ok<T, TError>(T ResultValue) : Result<T, TError>
 
     public override V Either<V>(Func<T, V> okFunction, Func<TError, V> errorFunction) => okFunction(ResultValue);
     public override T DefaultIfError(T value) => ResultValue;
+    public override Maybe<T> ToMaybe() => new Some<T>(ResultValue);
 }
 
 public sealed record Error<T, TError>(TError ErrorValue) : Result<T, TError>
@@ -32,6 +34,7 @@ public sealed record Error<T, TError>(TError ErrorValue) : Result<T, TError>
 
     public override V Either<V>(Func<T, V> okFunction, Func<TError, V> errorFunction) => errorFunction(ErrorValue);
     public override T DefaultIfError(T value) => value;
+    public override Maybe<T> ToMaybe() => new None<T>();
 }
 
 public abstract class Result<TError> : IMonad<Result<TError>>
