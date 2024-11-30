@@ -11,10 +11,10 @@ public sealed record MaybeT<TMonad, T> : IKind<MaybeT<TMonad>, T> where TMonad :
 
     public static MaybeT<TMonad, T> Of(IKind<TMonad, Maybe<T>> innerMonad) => new(innerMonad);
     public IKind<TMonad, Maybe<T>> RunMaybeT { get; }
-    
 }
 
-public abstract class MaybeT<TMonad> : IMonadPlus<MaybeT<TMonad>>,IMonadTransformer<MaybeT<TMonad>,TMonad> where TMonad : IMonad<TMonad>
+public abstract class MaybeT<TMonad> : IMonadPlus<MaybeT<TMonad>>, IMonadTransformer<MaybeT<TMonad>, TMonad>
+    where TMonad : IMonad<TMonad>
 {
     public static IKind<MaybeT<TMonad>, V> Map<T, V>(IKind<MaybeT<TMonad>, T> f, Func<T, V> fun)
         => IMonad<MaybeT<TMonad>>.Map(f, fun);
