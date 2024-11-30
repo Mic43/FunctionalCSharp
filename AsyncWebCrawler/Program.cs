@@ -7,7 +7,6 @@ using HtmlAgilityPack;
 using static FunctionalCSharp.New.Utils;
 using static FunctionalCSharp.New.MonadicConditionals;
 
-
 FunctionalCSharp.New.Monads.List<string> ExtractLinks(HtmlDocument doc, string html)
 {
     if (string.IsNullOrEmpty(html))
@@ -71,8 +70,7 @@ ListT<Async, (string, string)> Crawl(string url)
     HashSet<string> visited = new();
     HttpClient client = new HttpClient();
     var doc = new HtmlDocument();
-
-
+    
     ListT<Async, (string link, string title)> Execute(string url)
     {
         ListT<Async, string> TryDownloadHtml() =>
@@ -88,8 +86,7 @@ ListT<Async, (string, string)> Crawl(string url)
                     let title = ExtractTitle(doc, html)
                     from res in Execute(link).To() + ListT<Async>.Pure((link, title)).To()
                     select res
-                )
-                .To()
+                ).To()
             select _;
     }
 

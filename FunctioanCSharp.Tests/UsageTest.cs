@@ -40,7 +40,7 @@ public class Test
         var x =
             from z in res
             select Log(z);
-        var async = x.RunListT();
+        var async = x.RunListT;
 
         async.To().Run();
 
