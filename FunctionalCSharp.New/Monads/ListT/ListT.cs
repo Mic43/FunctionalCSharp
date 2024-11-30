@@ -27,6 +27,8 @@ public record ListT<TMonad, T> : IKind<ListT<TMonad>, T> where TMonad : IMonad<T
 public abstract class ListT<TMonad> : IMonadPlus<ListT<TMonad>>, IMonadTransformer<ListT<TMonad>, TMonad>
     where TMonad : IMonad<TMonad>
 {
+    private static IKind<TMonad, ListTStep> Nil => TMonad.Pure(ListTStep.Nil<TMonad>());
+
     public static IKind<ListT<TMonad>, V> Map<T, V>(IKind<ListT<TMonad>, T> f, Func<T, V> fun) =>
         IMonad<ListT<TMonad>>.Map(f, fun);
 
@@ -41,7 +43,7 @@ public abstract class ListT<TMonad> : IMonadPlus<ListT<TMonad>>, IMonadTransform
         return ListT<TMonad, V>.Of(TMonad.Bind<ListTStep, ListTStep>(next, step => step switch
         {
             Cons<TMonad, T> (var value, var rest) => Append(fun(value), Bind(rest, fun)).To().Next,
-            Nil<TMonad> n => TMonad.Pure((ListTStep)n),
+            Nil<TMonad> _ => Nil,
             _ => throw new ArgumentException(nameof(step))
         }));
     }
@@ -56,8 +58,7 @@ public abstract class ListT<TMonad> : IMonadPlus<ListT<TMonad>>, IMonadTransform
         IMonad<ListT<TMonad>>.Join(monad);
 
     public static IKind<ListT<TMonad>, T> Pure<T>(T value) =>
-        ListT<TMonad, T>.FromStep(ListTStep.Cons(value,
-            ListT<TMonad, T>.FromStep(ListTStep.Nil<TMonad>())));
+        ListT<TMonad, T>.FromStep(ListTStep.Cons(value, ListT<TMonad, T>.Of(Nil)));
 
     public static IKind<ListT<TMonad>, T> Append<T>(IKind<ListT<TMonad>, T> a, IKind<ListT<TMonad>, T> b)
     {
@@ -71,9 +72,37 @@ public abstract class ListT<TMonad> : IMonadPlus<ListT<TMonad>>, IMonadTransform
         }));
     }
 
-    public static IKind<ListT<TMonad>, T> Empty<T>() => ListT<TMonad, T>.FromStep(ListTStep.Nil<TMonad>());
+    public static IKind<ListT<TMonad>, T> Empty<T>() => ListT<TMonad, T>.Of(Nil);
 
     public static IKind<ListT<TMonad>, T> Lift<T>(IKind<TMonad, T> monad) =>
         ListT<TMonad, T>.Of(TMonad.Map(monad,
-            t => ListTStep.Cons(t, ListT<TMonad, T>.FromStep(ListTStep.Nil<TMonad>()))));
+            t => ListTStep.Cons(t, ListT<TMonad, T>.Of(Nil))));
+
+    public static IKind<ListT<TMonad>, T> TakeWhile<T>(IKind<ListT<TMonad>, T> source, Predicate<T> predicate)
+    {
+        var next = source.To().Next;
+        return ListT<TMonad, T>.Of(TMonad.Bind(next, step => step switch
+        {
+            Cons<TMonad, T>(var value, var rest) cons => predicate(value)
+                ? TMonad.Pure<ListTStep>(cons with { Rest = TakeWhile(rest, predicate).To() })
+                : Nil,
+            Nil<TMonad> _ => Nil,
+            _ => throw new ArgumentOutOfRangeException(nameof(step))
+        }));
+    }
+
+    public static IKind<ListT<TMonad>, T> Take<T>(IKind<ListT<TMonad>, T> source, int n)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(n);
+        
+        var next = source.To().Next;
+        return ListT<TMonad, T>.Of(TMonad.Bind(next, step => step switch
+        {
+            Cons<TMonad, T>(var value, var rest) cons => n > 0
+                ? TMonad.Pure<ListTStep>(cons with { Rest = Take(rest, n - 1).To() })
+                : Nil,
+            Nil<TMonad> _ => Nil,
+            _ => throw new ArgumentOutOfRangeException(nameof(step))
+        }));
+    }
 }

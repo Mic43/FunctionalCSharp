@@ -94,7 +94,7 @@ ListT<Async, (string, string)> Crawl(string url)
 }
 
 var listT =
-    from c in Crawl("http://news.bing.com")
+    from c in Crawl("http://news.bing.com").Take(10).To()
     select Log(c);
 
 listT.RunListT.To().Run();

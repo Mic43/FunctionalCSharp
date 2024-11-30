@@ -18,4 +18,12 @@ public static class ListTExtensions
     public static ListT<TMonad, V> Select<TMonad, T, V>(this ListT<TMonad, T> listT, Func<T, V> mapper)
         where TMonad : IMonad<TMonad> =>
         ListT<TMonad>.Map(listT, mapper).To();
+    
+    public static IKind<ListT<TMonad>, T> TakeWhile<TMonad, T>(this IKind<ListT<TMonad>, T> source, Predicate<T> predicate)
+        where TMonad : IMonad<TMonad> =>
+        ListT<TMonad>.TakeWhile(source, predicate);
+    
+    public static IKind<ListT<TMonad>, T> Take<TMonad, T>(this IKind<ListT<TMonad>, T> source, int n)
+        where TMonad : IMonad<TMonad> =>
+        ListT<TMonad>.Take(source, n);
 }
