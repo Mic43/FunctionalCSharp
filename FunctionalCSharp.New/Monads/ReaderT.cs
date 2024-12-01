@@ -44,16 +44,12 @@ public abstract class ReaderT<TEnv, TMonad> : IMonad<ReaderT<TEnv, TMonad>>,
 
     public static IKind<ReaderT<TEnv, TMonad>, T> Pure<T>(T value) =>
         new ReaderT<TEnv, TMonad, T>(_ => TMonad.Pure(value));
-
     public static IKind<ReaderT<TEnv, TMonad>, T> Lift<T>(IKind<TMonad, T> monad) =>
         new ReaderT<TEnv, TMonad, T>(_ => monad);
-
     public static ReaderT<TEnv, TMonad, TEnv> Ask() => new(TMonad.Pure);
     public static ReaderT<TEnv, TMonad, TEnvS> Asks<TEnvS>(Func<TEnv, TEnvS> f) => Map(Ask(), f).To();
-
     public static ReaderT<TEnv, TMonad, T> Local<T>(ReaderT<TEnv, TMonad, T> reader,
         Func<TEnv, TEnv> modifyEnvFunc) => reader.Local(modifyEnvFunc);
-
     public static IKind<TMonad, T> RunReaderT<T>(ReaderT<TEnv, TMonad, T> reader, TEnv env) =>
         reader.RunReaderT(env);
 }

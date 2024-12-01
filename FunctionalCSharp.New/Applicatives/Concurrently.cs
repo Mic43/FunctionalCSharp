@@ -10,10 +10,8 @@ public record Concurrently<T>(Func<CancellationToken, T> Task) : IKind<Concurren
     public T Run(CancellationToken cancellationToken) => Task(cancellationToken);
     public T Run() => Task(CancellationToken.None);
 
-    public static Concurrently<T> operator +(Concurrently<T> left, Concurrently<T> right)
-    {
-        return Concurrently.Append(left, right).To();
-    }
+    public static Concurrently<T> operator +(Concurrently<T> left, Concurrently<T> right) =>
+        Concurrently.Append(left, right).To();
 
     public static Concurrently<T> AdditiveIdentity => Concurrently.Empty<T>().To();
 }
@@ -46,9 +44,8 @@ public abstract class Concurrently : IAlternative<Concurrently>
 
     public static IKind<Concurrently, T> Pure<T>(T value) => new Concurrently<T>(_ => value);
 
-    public static IKind<Concurrently, T> Append<T>(IKind<Concurrently, T> a, IKind<Concurrently, T> b)
-    {
-        return new Concurrently<T>(ct =>
+    public static IKind<Concurrently, T> Append<T>(IKind<Concurrently, T> a, IKind<Concurrently, T> b) =>
+        new Concurrently<T>(ct =>
         {
             using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(ct);
             var cancellationToken = cancellationTokenSource.Token;
@@ -65,18 +62,16 @@ public abstract class Concurrently : IAlternative<Concurrently>
 
             return completed.Result.Result;
         });
-    }
 
-    public static IKind<Concurrently, T> Empty<T>()
-    {
-        return new Concurrently<T>(ct =>
+    public static IKind<Concurrently, T> Empty<T>() =>
+        new Concurrently<T>(ct =>
             {
                 var task = Task.Delay(Timeout.InfiniteTimeSpan, ct);
                 task.Wait(ct);
                 return (T)new object();
             }
         );
-    }
+
     public static Concurrently<T> FromTask<T>(Func<CancellationToken, T> task) => new(task);
 }
 

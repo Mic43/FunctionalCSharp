@@ -1,6 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using FunctionalCSharp.New;
 using FunctionalCSharp.New.Monads;
 using FunctionalCSharp.New.Monads.ListT;
 using HtmlAgilityPack;
@@ -94,7 +93,8 @@ ListT<Async, (string, string)> Crawl(string url)
 }
 
 var listT =
-    from c in Crawl("http://news.bing.com").Take(10).To()
+    from c in Crawl("http://news.bing.com").To()
+    where c.Item1.Contains(".microsoft.com")
     select Log(c);
 
 listT.RunListT.To().Run();

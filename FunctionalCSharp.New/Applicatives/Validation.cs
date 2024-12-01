@@ -37,15 +37,11 @@ public abstract class Validation<TSemigroup, TError> : IApplicative<Validation<T
         return (app: applicative.To(), func: fun.To()) switch
         {
             (ValidationOk<T, TSemigroup, TError>(var value), ValidationOk<Func<T, V>, TSemigroup, TError> (var func)) =>
-                new
-                    ValidationOk<V, TSemigroup, TError>(
-                        func(value)),
+                new ValidationOk<V, TSemigroup, TError>(func(value)),
             (ValidationOk<T, TSemigroup, TError> _, ValidationFailed<Func<T, V>, TSemigroup, TError>(var errors)) => new
-                ValidationFailed<V, TSemigroup, TError>(
-                    errors),
+                ValidationFailed<V, TSemigroup, TError>(errors),
             (ValidationFailed<Func<T, V>, TSemigroup, TError>(var errors), ValidationOk<Func<T, V>, TSemigroup, TError>
-                _) =>
-                new ValidationFailed<V, TSemigroup, TError>(errors),
+                _) => new ValidationFailed<V, TSemigroup, TError>(errors),
             (ValidationFailed<T, TSemigroup, TError>(var errors),
                 ValidationFailed<Func<T, V>, TSemigroup, TError>(var errors2)) =>
                 new ValidationFailed<V, TSemigroup, TError>(TSemigroup.Combine(errors, errors2)),

@@ -18,6 +18,12 @@ public record ListT<TMonad, T> : IKind<ListT<TMonad>, T> where TMonad : IMonad<T
             _ => throw new ArgumentOutOfRangeException(nameof(step))
         });
 
+    /// <summary>
+    /// Concatenates two lists using Append
+    /// </summary>
+    /// <param name="left"></param>
+    /// <param name="right"></param>
+    /// <returns>Concatenated list</returns>
     public static ListT<TMonad, T> operator +(ListT<TMonad, T> left, ListT<TMonad, T> right)
     {
         return ListT<TMonad>.Append(left, right).To();
@@ -94,15 +100,57 @@ public abstract class ListT<TMonad> : IMonadPlus<ListT<TMonad>>, IMonadTransform
     public static IKind<ListT<TMonad>, T> Take<T>(IKind<ListT<TMonad>, T> source, int n)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(n);
-        
+
         var next = source.To().Next;
         return ListT<TMonad, T>.Of(TMonad.Bind(next, step => step switch
         {
-            Cons<TMonad, T>(var value, var rest) cons => n > 0
+            Cons<TMonad, T>(_, var rest) cons => n > 0
                 ? TMonad.Pure<ListTStep>(cons with { Rest = Take(rest, n - 1).To() })
                 : Nil,
             Nil<TMonad> _ => Nil,
             _ => throw new ArgumentOutOfRangeException(nameof(step))
         }));
     }
+
+    public static IKind<ListT<TMonad>, T> DropWhile<T>(IKind<ListT<TMonad>, T> source, Predicate<T> predicate)
+    {
+        var next = source.To().Next;
+        return ListT<TMonad, T>.Of(TMonad.Bind(next, step => step switch
+        {
+            Cons<TMonad, T>(var value, var rest) cons => predicate(value)
+                ? DropWhile(rest, predicate).To().Next
+                : TMonad.Pure<ListTStep>(cons),
+            Nil<TMonad> _ => Nil,
+            _ => throw new ArgumentOutOfRangeException(nameof(step))
+        }));
+    }
+
+    public static IKind<ListT<TMonad>, T> Drop<T>(IKind<ListT<TMonad>, T> source, int n)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(n);
+
+        var next = source.To().Next;
+        return ListT<TMonad, T>.Of(TMonad.Bind(next, step => step switch
+        {
+            Cons<TMonad, T>(_, var rest) cons => n > 0
+                ? Drop(rest, n - 1).To().Next
+                : TMonad.Pure<ListTStep>(cons),
+            Nil<TMonad> _ => Nil,
+            _ => throw new ArgumentOutOfRangeException(nameof(step))
+        }));
+    }
+    
+    public static IKind<ListT<TMonad>, T> Where<T>(IKind<ListT<TMonad>, T> source, Func<T,bool> predicate)
+    {
+        var next = source.To().Next;
+        return ListT<TMonad, T>.Of(TMonad.Bind(next, step => step switch
+        {
+            Cons<TMonad, T>(var value, var rest) cons => predicate(value)
+                ? TMonad.Pure<ListTStep>(cons with { Rest = Where(rest, predicate).To() })
+                : Where(rest, predicate).To().Next,
+            Nil<TMonad> _ => Nil,
+            _ => throw new ArgumentOutOfRangeException(nameof(step))
+        }));
+    }
+    
 }
