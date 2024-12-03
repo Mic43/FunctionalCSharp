@@ -2,8 +2,16 @@ using FunctionalCSharp.New.Base;
 
 namespace FunctionalCSharp.New.Monads;
 
-public record ResultT<TError, TMonad, T>(IKind<TMonad, IKind<Result<TError>, T>> InnerMonad)
-    : IKind<ResultT<TError, TMonad>, T> where TMonad : IMonad<TMonad>;
+public record ResultT<TError, TMonad, T> : IKind<ResultT<TError, TMonad>, T> where TMonad : IMonad<TMonad>
+{
+    internal ResultT(IKind<TMonad, Result<T, TError>> InnerMonad)
+    {
+        this.RunResultT = InnerMonad;
+    }
+
+    public static ResultT<TError, TMonad, T> Of(IKind<TMonad, Result<T, TError>> innerMonad) => new(innerMonad);
+    public IKind<TMonad, Result<T, TError>> RunResultT { get;  }
+}
 
 public abstract class ResultT<TError, TMonad> : IMonad<ResultT<TError, TMonad>>,
     IMonadTransformer<ResultT<TError, TMonad>, TMonad> where TMonad : IMonad<TMonad>
@@ -18,19 +26,19 @@ public abstract class ResultT<TError, TMonad> : IMonad<ResultT<TError, TMonad>>,
     public static IKind<ResultT<TError, TMonad>, V> Bind<T, V>(IKind<ResultT<TError, TMonad>, T> monad,
         Func<T, IKind<ResultT<TError, TMonad>, V>> fun)
     {
-        var innerMonad = monad.To().InnerMonad;
+        var innerMonad = monad.To().RunResultT;
         return new ResultT<TError, TMonad, V>(
             TMonad.Bind(innerMonad, result =>
                 result.To().Either(
-                    t => fun(t).To().InnerMonad,
-                    error => TMonad.Pure<>(Result<V, TError>.Error(error)))));
+                    t => fun(t).To().RunResultT,
+                    error => TMonad.Pure(Result<V, TError>.Error(error)))));
     }
 
     public static IKind<ResultT<TError, TMonad>, T> Pure<T>(T value) =>
-        new ResultT<TError, TMonad, T>(TMonad.Map(TMonad.Pure(value), Result<TError>.Pure));
+        new ResultT<TError, TMonad, T>(TMonad.Map(TMonad.Pure(value), t => Result<TError>.Pure(t).To()));
 
     public static IKind<ResultT<TError, TMonad>, T> Lift<T>(IKind<TMonad, T> monad) =>
-        new ResultT<TError, TMonad, T>(TMonad.Map(monad, Result<TError>.Pure));
+        new ResultT<TError, TMonad, T>(TMonad.Map(monad, t => Result<TError>.Pure(t).To()));
 }
 
 public static class ResultTExt

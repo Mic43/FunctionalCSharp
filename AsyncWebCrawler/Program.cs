@@ -1,10 +1,13 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using FunctionalCSharp.New;
 using FunctionalCSharp.New.Monads;
 using FunctionalCSharp.New.Monads.ListT;
 using HtmlAgilityPack;
 using static FunctionalCSharp.New.Utils;
 using static FunctionalCSharp.New.MonadicConditionals;
+using static FunctionalCSharp.New.Monads.ListT.ListT<FunctionalCSharp.New.Monads.Async>;
+
 
 FunctionalCSharp.New.Monads.List<string> ExtractLinks(HtmlDocument doc, string html)
 {
@@ -37,24 +40,22 @@ string? ExtractTitle(HtmlDocument doc, string html)
 }
 
 // Crawls pages asynchronously until error is encountered
-ListT<MaybeT<Async>, (string, string)> CrawlUntilError(string url)
+ListT<ResultT<Exception, Async>, (string, string)> CrawlUntilError(string url)
 {
     HashSet<string> visited = new();
     HttpClient client = new HttpClient();
     var doc = new HtmlDocument();
 
-    ListT<MaybeT<Async>, (string link, string title)> Execute(string url) =>
+    ListT<ResultT<Exception, Async>, (string link, string title)> Execute(string url) =>
         from _ in When(visited.Add(url),
-                from html in ListT<MaybeT<Async>>.Lift(
-                    MaybeT<Async, string>.Of(
-                        from a in client.GetStringAsync(url).ToAsync().Catch()
-                        select a.ToMaybe())
+                from html in ListT<ResultT<Exception, Async>>.Lift(
+                    ResultT<Exception, Async, string>.Of(client.GetStringAsync(url).ToAsync().Catch())
                 ).To()
                 from link in
                     List.MSum(from c in ExtractLinks(doc, html)
-                        select ListT<MaybeT<Async>>.Pure(c)).To()
+                        select ListT<ResultT<Exception, Async>>.Pure(c)).To()
                 let title = ExtractTitle(doc, html)
-                from res in Execute(link).To() + ListT<MaybeT<Async>>.Pure((link, title)).To()
+                from res in Execute(link).To() + ListT<ResultT<Exception, Async>>.Pure((link, title)).To()
                 select res
             )
             .To()
@@ -66,26 +67,26 @@ ListT<MaybeT<Async>, (string, string)> CrawlUntilError(string url)
 // Crawls pages asynchronously omitting erratic pages
 ListT<Async, (string, string)> Crawl(string url)
 {
-    HashSet<string> visited = new();
+    HashSet<string> visited = [];
     HttpClient client = new HttpClient();
     var doc = new HtmlDocument();
-    
+
     ListT<Async, (string link, string title)> Execute(string url)
     {
         ListT<Async, string> TryDownloadHtml() =>
-            from res in ListT<Async>.Lift(client.GetStringAsync(url).ToAsync().Catch()).To()
-            from x in res.Either(ListT<Async>.Pure, _ => ListT<Async>.Empty<string>()).To()
+            from res in Lift(client.GetStringAsync(url).ToAsync().Catch()).To()
+            from x in res.Either(Pure, _ => Empty<string>()).To()
             select x;
 
         return from _ in When(visited.Add(url),
-                    from html in TryDownloadHtml()
-                    from link in
-                        List.MSum(from c in ExtractLinks(doc, html)
-                            select ListT<Async>.Pure(c)).To()
-                    let title = ExtractTitle(doc, html)
-                    from res in Execute(link).To() + ListT<Async>.Pure((link, title)).To()
-                    select res
-                ).To()
+                from html in TryDownloadHtml()
+                from link in
+                    List.MSum(from c in ExtractLinks(doc, html)
+                        select Pure(c)).To()
+                let title = ExtractTitle(doc, html)
+                from res in Execute(link).To() + Pure((link, title)).To()
+                select res
+            ).To()
             select _;
     }
 
@@ -93,8 +94,19 @@ ListT<Async, (string, string)> Crawl(string url)
 }
 
 var listT =
-    from c in Crawl("http://news.bing.com").To()
+    from c in CrawlUntilError("http://news.bing.com").To()
     where c.Item1.Contains(".microsoft.com")
     select Log(c);
 
-listT.RunListT.To().Run();
+// listT.RunListT.To().Run();
+
+switch (listT.RunListT.To().RunResultT.To().Run())
+{
+    case Error<Unit, Exception>(var errorValue):
+        Console.WriteLine(errorValue);
+        break;
+    case Ok<Unit, Exception> ok:
+        break;
+    default:
+        throw new ArgumentOutOfRangeException();
+}
