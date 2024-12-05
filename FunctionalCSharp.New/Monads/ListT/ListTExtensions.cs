@@ -38,5 +38,9 @@ public static class ListTExtensions
         ListT<TMonad>.Drop(source, n);
 
     public static ListT<TMonad, T> Where<T, TMonad>(this ListT<TMonad, T> source, Func<T, bool> predicate)
-        where TMonad : IMonad<TMonad> => ListT<TMonad>.Where(source, predicate).To();
+        where TMonad : IMonad<TMonad> => ListT<TMonad>.Where(source, predicate);
+
+    public static IKind<TMonad, TResult> Fold<T, TResult, TMonad>(this IKind<ListT<TMonad>, T> source, TResult identity,
+        Func<TResult, T, IKind<TMonad, TResult>> folder) where TMonad : IMonad<TMonad> =>
+        ListT<TMonad>.Fold(source, identity, folder);
 }

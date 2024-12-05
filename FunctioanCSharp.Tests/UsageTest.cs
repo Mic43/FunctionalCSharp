@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -19,31 +20,38 @@ public class Test
 
     public static void Tst()
     {
-        IEnumerable<string> GetAddresses()
-        {
-            yield return @"http://yahoo.com";
-            yield return @"http://bing.com";
-        }
+        // IEnumerable<string> GetAddresses()
+        // {
+        //     yield return @"http://yahoo.com";
+        //     yield return @"http://bing.com";
+        // }
+        //
+        // var client = new HttpClient();
+        //
+        // var list = new New.Monads.List<string>(GetAddresses());
+        //
+        // var res =
+        //     from a in
+        //         List.MSum(from c in list
+        //             select ListT<Async>.Pure(c)).To()
+        //     from b in ListT<Async>.Lift(
+        //         client.GetStringAsync(a).ToMonad()
+        //     ).To()
+        //     select (a, b.Length);
+        //
+        // var x =
+        //     from z in res
+        //     select Log(z);
+        // var async = x.RunListT;
+        //
+        // async.To().Run();
 
-        var client = new HttpClient();
-
-        var list = new New.Monads.List<string>(GetAddresses());
-
-        var res =
-            from a in
-                List.MSum(from c in list
-                    select ListT<Async>.Pure(c)).To()
-            from b in ListT<Async>.Lift(
-                client.GetStringAsync(a).ToMonad()
-            ).To()
-            select (a, b.Length);
-
-        var x =
-            from z in res
-            select Log(z);
-        var async = x.RunListT;
-
-        async.To().Run();
+        var listT =
+            from a in ListT<Async>.Repeat(5).Take(5)
+            select Log(a);
+        var fold = listT.Fold(0,(a,b) => Async.Pure(a + b));
+        Console.WriteLine(fold.To().Run());
+        
 
 
         // var traverse = List.Traverse(list, Some<int>.Of);

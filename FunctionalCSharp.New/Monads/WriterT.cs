@@ -70,7 +70,7 @@ public abstract class WriterT<TMonoid, TOut, TMonad> :
         new WriterT<TMonoid, TOut, TMonad, T>(TMonad.Map(monad, t => (TMonoid.Identity<TOut>(), t)));
 
     public static WriterT<TMonoid, TOut, TMonad, T> Writer<T>(T value, IKind<TMonoid, TOut> outValue) =>
-        new WriterT<TMonoid, TOut, TMonad, T>(TMonad.Pure((
+        new(TMonad.Pure((
             TMonoid.Combine(TMonoid.Identity<TOut>(), outValue), value)));
 
     public static WriterT<TMonoid, TOut, TMonad, Unit> Tell(IKind<TMonoid, TOut> outValue) =>
