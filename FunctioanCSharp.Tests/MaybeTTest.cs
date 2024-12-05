@@ -13,7 +13,7 @@ public class MaybeTTest
         Async<string> DoSthA() => Async<string>.FromResult("start");
 
         Async<Maybe<int>> DoSthB(string input) =>
-            Async<Maybe<int>>.FromResult(input.StartsWith("start") ? Some<int>.Of(1) : new None<int>());
+            Async<Maybe<int>>.FromResult(input.StartsWith("start") ? Maybe.Of(1) : new None<int>());
 
         Async<string> DoSthC(int input) => Async<string>.FromResult(input > 0 ? "OK" : "ValidationError");
 

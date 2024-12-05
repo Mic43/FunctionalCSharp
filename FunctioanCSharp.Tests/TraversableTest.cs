@@ -13,7 +13,7 @@ public class TraversableTest
     {
         var init = new List<int>(new[] { 1, 2, 3 });
         
-        var traverse = List.Traverse(init, Some<int>.Of);
+        var traverse = List.Traverse(init, Maybe.Of);
         var actual = traverse.To();
 
         switch (actual)
@@ -34,7 +34,7 @@ public class TraversableTest
     {
         var init = new New.Monads.List<int>(new[] { 1, 2, 3 });
 
-        var actual = List.Traverse(init, _ => Maybe<int>.None()).To();
+        var actual = List.Traverse(init, _ => Maybe.None<int>()).To();
         var expected = Maybe<IKind<List, int>>.None();
         
         Assert.Equal(expected,actual);

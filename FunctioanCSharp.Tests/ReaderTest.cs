@@ -33,11 +33,11 @@ public class ReaderTest
     {
         Maybe<int> DoSthA(string input)
         {
-            return string.IsNullOrEmpty(input) ? new None<int>() : Some<int>.Of(1);
+            return string.IsNullOrEmpty(input) ? new None<int>() : Maybe.Of(1);
         }
         Maybe<string> DoSthB(int input,string s)
         {
-            return input < 0  ? new None<string>() : Some<string>.Of(s+"OK");
+            return input < 0  ? new None<string>() : Maybe.Of(s+"OK");
         }
 
         float config = 5.0f;

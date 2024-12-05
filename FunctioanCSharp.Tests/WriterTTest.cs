@@ -9,9 +9,9 @@ public class WriterTTest
     [Property]
     public bool MaybeWriterTest(int input, string s)
     {
-        Maybe<int> DoSthA(string input) => string.IsNullOrEmpty(input) ? new None<int>() : Some<int>.Of(1);
+        Maybe<int> DoSthA(string input) => string.IsNullOrEmpty(input) ? new None<int>() : Maybe.Of(1);
 
-        Maybe<string> DoSthB(int input, string s) => input < 0 ? new None<string>() : Some<string>.Of(s + "OK");
+        Maybe<string> DoSthB(int input, string s) => input < 0 ? new None<string>() : Maybe.Of(s + "OK");
 
         var res =
             from a in WriterT<List, string, Maybe>.Lift(DoSthA(s)).To()

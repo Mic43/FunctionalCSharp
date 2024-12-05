@@ -5,19 +5,20 @@ namespace FunctionalCSharp.New.Monads;
 public abstract record Maybe<T> : IKind<Maybe, T>
 {
     public static Maybe<T> None() => new None<T>();
+    public static Maybe<T> Of(T value) => new Some<T>(value);
 }
 
 public sealed record None<T> : Maybe<T>;
 
 public sealed record Some<T>(T Value) : Maybe<T>
 {
-    public static Some<T> Of(T value) => new(value);
-
     public void Deconstruct(out T value) => value = Value;
 }
 
 public abstract class Maybe : IMonadPlus<Maybe>
 {
+    public static Maybe<T> None<T>() => Maybe<T>.None();
+    public static Maybe<T> Of<T>(T value) => Maybe<T>.Of(value);
     public static IKind<Maybe, V> Map<T, V>(IKind<Maybe, T> f, Func<T, V> fun) => IMonad<Maybe>.Map(f, fun);
 
     public static IKind<Maybe, V> Apply<T, V>(IKind<Maybe, T> applicative, IKind<Maybe, Func<T, V>> fun) =>

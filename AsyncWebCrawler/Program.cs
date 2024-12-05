@@ -8,7 +8,6 @@ using static FunctionalCSharp.New.Utils;
 using static FunctionalCSharp.New.MonadicConditionals;
 using static FunctionalCSharp.New.Monads.ListT.ListT<FunctionalCSharp.New.Monads.Async>;
 
-
 FunctionalCSharp.New.Monads.List<string> ExtractLinks(HtmlDocument doc, string html)
 {
     if (string.IsNullOrEmpty(html))
