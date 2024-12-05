@@ -48,7 +48,7 @@ ListT<ResultT<Exception, Async>, (string, string)> CrawlUntilError(string url)
     ListT<ResultT<Exception, Async>, (string link, string title)> Execute(string url) =>
         from _ in When(visited.Add(url),
                 from html in ListT<ResultT<Exception, Async>>.Lift(
-                    ResultT<Exception, Async, string>.Of(client.GetStringAsync(url).ToAsync().Catch())
+                    ResultT<Exception, Async, string>.Of(client.GetStringAsync(url).ToMonad().Catch())
                 ).To()
                 from link in
                     List.MSum(from c in ExtractLinks(doc, html)
@@ -73,7 +73,7 @@ ListT<Async, (string, string)> Crawl(string url)
     ListT<Async, (string link, string title)> Execute(string url)
     {
         ListT<Async, string> TryDownloadHtml() =>
-            from res in Lift(client.GetStringAsync(url).ToAsync().Catch()).To()
+            from res in Lift(client.GetStringAsync(url).ToMonad().Catch()).To()
             from x in res.Either(Pure, _ => Empty<string>()).To()
             select x;
 
@@ -93,7 +93,7 @@ ListT<Async, (string, string)> Crawl(string url)
 }
 
 var listT =
-    from c in CrawlUntilError("http://news.bing.com").To()
+    from c in CrawlUntilError("http://news.bing.com")
     where c.Item1.Contains(".microsoft.com")
     select Log(c);
 

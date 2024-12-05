@@ -34,7 +34,7 @@ public class Test
                 List.MSum(from c in list
                     select ListT<Async>.Pure(c)).To()
             from b in ListT<Async>.Lift(
-                client.GetStringAsync(a).ToAsync()
+                client.GetStringAsync(a).ToMonad()
             ).To()
             select (a, b.Length);
 

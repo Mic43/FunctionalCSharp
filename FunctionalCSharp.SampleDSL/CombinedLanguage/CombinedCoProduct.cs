@@ -10,11 +10,11 @@ internal static class CombinedInstructions
 {
     internal static Free<Coproduct<Instruction<T>, NewInstruction>, TNext> ToCombined<T, TNext>(
         this Free<Instruction<T>, TNext> program) =>
-        program.Hoist(new InstructionTransform<T>()).To();
+        program.Hoist(new InstructionTransform<T>());
 
     internal static Free<Coproduct<Instruction<T>, NewInstruction>, TNext> ToCombined<T, TNext>(
         this Free<NewInstruction, TNext> program) =>
-        program.Hoist(new NewInstructionTransform<T>()).To();
+        program.Hoist(new NewInstructionTransform<T>());
 
 
     private class

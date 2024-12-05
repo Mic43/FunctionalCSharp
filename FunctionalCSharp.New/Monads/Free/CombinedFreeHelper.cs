@@ -6,12 +6,12 @@ public static class CombinedFreeHelper
     public static Free<Coproduct<TLanguageA, TLanguageB>, TNext> ToCoproduct<TNext, TLanguageA, TLanguageB>(
         this Free<TLanguageA, TNext> program) where TLanguageA : IFunctor<TLanguageA>
         where TLanguageB : IFunctor<TLanguageB> =>
-        program.Hoist(new LanguageATransform<TLanguageA, TLanguageB>()).To();
+        program.Hoist(new LanguageATransform<TLanguageA, TLanguageB>());
 
     public static Free<Coproduct<TLanguageA, TLanguageB>, TNext> ToCoproduct<TNext, TLanguageA, TLanguageB>(
         this Free<TLanguageB, TNext> program) where TLanguageA : IFunctor<TLanguageA>
         where TLanguageB : IFunctor<TLanguageB> =>
-        program.Hoist(new LanguageBTransform<TLanguageA, TLanguageB>()).To();
+        program.Hoist(new LanguageBTransform<TLanguageA, TLanguageB>());
 
 
     private class LanguageBTransform<TLanguageA, TLanguageB> : INaturalTransformation<TLanguageB,

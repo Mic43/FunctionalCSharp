@@ -83,7 +83,7 @@ public static class AsyncExt
         return (Async<T>)kind;
     }
 
-    public static Async<T> ToAsync<T>(this Task<T> task)
+    public static Async<T> ToMonad<T>(this Task<T> task)
     {
         return Async<T>.FromTask(task);
     }

@@ -49,32 +49,32 @@ sealed record Dynamic<T, TNext>(Func<Free<Instruction<T>, TNext>> Program, Func<
 public static class Instructions
 {
     public static Free<Instruction<T>, T> Add<T>(T arg1, T arg2)
-        => Free<Instruction<T>>.LiftF(new Add<T, T>(arg1, arg2, z => z)).To();
+        => Free<Instruction<T>>.LiftF(new Add<T, T>(arg1, arg2, z => z));
 
     public static Free<Instruction<T>, T> Mul<T>(T arg1, T arg2) =>
-        Free<Instruction<T>>.LiftF(new Mul<T, T>(arg1, arg2, z => z)).To();
+        Free<Instruction<T>>.LiftF(new Mul<T, T>(arg1, arg2, z => z));
 
     public static Free<Instruction<T>, T> If<T>(Func<bool> condition,
         Free<Instruction<T>, T> onTrue,
         Free<Instruction<T>, T> onFalse) =>
-        Free<Instruction<T>>.LiftF(new If<T, T>(condition, onTrue, onFalse, z => z)).To();
+        Free<Instruction<T>>.LiftF(new If<T, T>(condition, onTrue, onFalse, z => z));
 
     public static Free<Instruction<T>, T> Try<T>(
         Free<Instruction<T>, T> guarded,
         Free<Instruction<T>, T> onCatch) =>
-        Free<Instruction<T>>.LiftF(new Try<T, T>(guarded, onCatch, z => z)).To();
+        Free<Instruction<T>>.LiftF(new Try<T, T>(guarded, onCatch, z => z));
     
     public static Free<Instruction<T>, T> Read<T>() =>
-        Free<Instruction<T>>.LiftF(new Read<T, T>(t => t)).To();
+        Free<Instruction<T>>.LiftF(new Read<T, T>(t => t));
 
     public static Free<Instruction<T>, Unit> Write<T>(T value) =>
-        Free<Instruction<T>>.LiftF(new Write<T, Unit>(value, Unit.Instance)).To();
+        Free<Instruction<T>>.LiftF(new Write<T, Unit>(value, Unit.Instance));
 
     public static Free<Instruction<T>, T> Const<T>(T value) =>
         Free<Instruction<T>>.Pure(value).To();
 
     public static Free<Instruction<T>, T> Dynamic<T>(Func<Free<Instruction<T>, T>> programGenerator) =>
-        Free<Instruction<T>>.LiftF(new Dynamic<T, T>(programGenerator, _ => _)).To();
+        Free<Instruction<T>>.LiftF(new Dynamic<T, T>(programGenerator, _ => _));
 }
 
 /// <summary>

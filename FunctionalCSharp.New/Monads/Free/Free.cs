@@ -15,14 +15,14 @@ public abstract record Free<TFunctor, T> : IKind<Free<TFunctor>, T> where TFunct
     /// <param name="naturalTransformation">transformation between functors to used to produce new free monad instance</param>
     /// <typeparam name="TFunctorB">new functor type</typeparam>
     /// <returns>instance of the free monad with modified functor type, according to provided </returns>natural transformation between functors
-    public IKind<Free<TFunctorB>, T> Hoist<TFunctorB>(INaturalTransformation<TFunctor, TFunctorB> naturalTransformation)
+    public Free<TFunctorB, T> Hoist<TFunctorB>(INaturalTransformation<TFunctor, TFunctorB> naturalTransformation)
         where TFunctorB : IFunctor<TFunctorB>
     {
         return this switch
         {
-            Pure<TFunctor, T>(var value) => Free<TFunctorB>.Pure(value),
+            Pure<TFunctor, T>(var value) => Free<TFunctorB>.Pure(value).To(),
             Roll<TFunctor, T>(var free) => new Roll<TFunctorB, T>(
-                naturalTransformation.Transform(TFunctor.Map(free, next => next.Hoist(naturalTransformation).To()))),
+                naturalTransformation.Transform(TFunctor.Map(free, next => next.Hoist(naturalTransformation)))),
             _ => throw new ArgumentOutOfRangeException()
         };
     }
@@ -74,7 +74,7 @@ public abstract class Free<TFunctor> : IMonad<Free<TFunctor>> where TFunctor : I
 
     public static IKind<Free<TFunctor>, T> Pure<T>(T value) => new Pure<TFunctor, T>(value);
 
-    public static IKind<Free<TFunctor>, T> LiftF<T>(IKind<TFunctor, T> functor) =>
+    public static Free<TFunctor, T> LiftF<T>(IKind<TFunctor, T> functor) =>
         new Roll<TFunctor, T>(TFunctor.Map(functor, t => Pure(t).To()));
 
     public static T Iter<T>(Func<IKind<TFunctor, T>, T> fun, IKind<Free<TFunctor>, T> free)
@@ -92,7 +92,7 @@ public abstract class Free<TFunctor> : IMonad<Free<TFunctor>> where TFunctor : I
         }
     }
 
-    public static IKind<Free<TFunctorB>, T> Hoist<T, TFunctorB>(INaturalTransformation<TFunctor, TFunctorB> fun,
+    public static Free<TFunctorB, T> Hoist<T, TFunctorB>(INaturalTransformation<TFunctor, TFunctorB> fun,
         IKind<Free<TFunctor>, T> free) where TFunctorB : IFunctor<TFunctorB> =>
         free.To().Hoist(fun);
 }

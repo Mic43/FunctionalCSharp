@@ -84,7 +84,7 @@ public abstract class ListT<TMonad> : IMonadPlus<ListT<TMonad>>, IMonadTransform
         ListT<TMonad, T>.Of(TMonad.Map(monad,
             t => ListTStep.Cons(t, ListT<TMonad, T>.Of(Nil))));
 
-    public static IKind<ListT<TMonad>, T> TakeWhile<T>(IKind<ListT<TMonad>, T> source, Predicate<T> predicate)
+    public static ListT<TMonad, T> TakeWhile<T>(IKind<ListT<TMonad>, T> source, Predicate<T> predicate)
     {
         var next = source.To().Next;
         return ListT<TMonad, T>.Of(TMonad.Bind(next, step => step switch
@@ -97,7 +97,7 @@ public abstract class ListT<TMonad> : IMonadPlus<ListT<TMonad>>, IMonadTransform
         }));
     }
 
-    public static IKind<ListT<TMonad>, T> Take<T>(IKind<ListT<TMonad>, T> source, int n)
+    public static ListT<TMonad, T> Take<T>(IKind<ListT<TMonad>, T> source, int n)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(n);
 
@@ -112,7 +112,7 @@ public abstract class ListT<TMonad> : IMonadPlus<ListT<TMonad>>, IMonadTransform
         }));
     }
 
-    public static IKind<ListT<TMonad>, T> DropWhile<T>(IKind<ListT<TMonad>, T> source, Predicate<T> predicate)
+    public static ListT<TMonad, T> DropWhile<T>(IKind<ListT<TMonad>, T> source, Predicate<T> predicate)
     {
         var next = source.To().Next;
         return ListT<TMonad, T>.Of(TMonad.Bind(next, step => step switch
@@ -125,7 +125,7 @@ public abstract class ListT<TMonad> : IMonadPlus<ListT<TMonad>>, IMonadTransform
         }));
     }
 
-    public static IKind<ListT<TMonad>, T> Drop<T>(IKind<ListT<TMonad>, T> source, int n)
+    public static ListT<TMonad, T> Drop<T>(IKind<ListT<TMonad>, T> source, int n)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(n);
 
@@ -139,8 +139,8 @@ public abstract class ListT<TMonad> : IMonadPlus<ListT<TMonad>>, IMonadTransform
             _ => throw new ArgumentOutOfRangeException(nameof(step))
         }));
     }
-    
-    public static IKind<ListT<TMonad>, T> Where<T>(IKind<ListT<TMonad>, T> source, Func<T,bool> predicate)
+
+    public static IKind<ListT<TMonad>, T> Where<T>(IKind<ListT<TMonad>, T> source, Func<T, bool> predicate)
     {
         var next = source.To().Next;
         return ListT<TMonad, T>.Of(TMonad.Bind(next, step => step switch
@@ -152,5 +152,4 @@ public abstract class ListT<TMonad> : IMonadPlus<ListT<TMonad>>, IMonadTransform
             _ => throw new ArgumentOutOfRangeException(nameof(step))
         }));
     }
-    
 }

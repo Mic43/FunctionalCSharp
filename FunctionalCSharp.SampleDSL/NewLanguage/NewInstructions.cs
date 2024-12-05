@@ -14,10 +14,10 @@ record ReadLine<TNext>(Func<string, TNext> Next) : NewInstruction<TNext>;
 static class NewInstructions
 {
     public static Free<NewInstruction, Unit> WriteLine(string line) =>
-        Free<NewInstruction>.LiftF(new WriteLine<Unit>(line, Unit.Instance)).To();
+        Free<NewInstruction>.LiftF(new WriteLine<Unit>(line, Unit.Instance));
 
     public static Free<NewInstruction, string> ReadLine() =>
-        Free<NewInstruction>.LiftF(new ReadLine<string>(s => s)).To();
+        Free<NewInstruction>.LiftF(new ReadLine<string>(s => s));
 }
 
 abstract class NewInstruction : IFunctor<NewInstruction>

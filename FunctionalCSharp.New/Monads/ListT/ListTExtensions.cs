@@ -19,21 +19,21 @@ public static class ListTExtensions
         where TMonad : IMonad<TMonad> =>
         ListT<TMonad>.Map(listT, mapper).To();
 
-    public static IKind<ListT<TMonad>, T> TakeWhile<TMonad, T>(this IKind<ListT<TMonad>, T> source,
+    public static ListT<TMonad, T> TakeWhile<TMonad, T>(this IKind<ListT<TMonad>, T> source,
         Predicate<T> predicate)
         where TMonad : IMonad<TMonad> =>
         ListT<TMonad>.TakeWhile(source, predicate);
 
-    public static IKind<ListT<TMonad>, T> Take<TMonad, T>(this IKind<ListT<TMonad>, T> source, int n)
+    public static ListT<TMonad, T> Take<TMonad, T>(this IKind<ListT<TMonad>, T> source, int n)
         where TMonad : IMonad<TMonad> =>
         ListT<TMonad>.Take(source, n);
 
-    public static IKind<ListT<TMonad>, T> DropWhile<TMonad, T>(this IKind<ListT<TMonad>, T> source,
+    public static ListT<TMonad, T> DropWhile<TMonad, T>(this IKind<ListT<TMonad>, T> source,
         Predicate<T> predicate)
         where TMonad : IMonad<TMonad> =>
         ListT<TMonad>.DropWhile(source, predicate);
 
-    public static IKind<ListT<TMonad>, T> Drop<TMonad, T>(this IKind<ListT<TMonad>, T> source, int n)
+    public static ListT<TMonad, T> Drop<TMonad, T>(this IKind<ListT<TMonad>, T> source, int n)
         where TMonad : IMonad<TMonad> =>
         ListT<TMonad>.Drop(source, n);
 

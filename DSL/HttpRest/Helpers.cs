@@ -7,18 +7,18 @@ static class Helpers
 {
     public static Free<HttpRestLang, HttpResponseMessage> HttpGet(string address)
         => Free<HttpRestLang>.LiftF(
-            new GetCommand<HttpResponseMessage>(address, a => a)).To();
+            new GetCommand<HttpResponseMessage>(address, a => a));
 
     public static Free<HttpRestLang, HttpResponseMessage> HttpPost(string address, HttpContent httpContent)
         => Free<HttpRestLang>.LiftF(
-            new PostCommand<HttpResponseMessage>(address, httpContent, a => a)).To();
+            new PostCommand<HttpResponseMessage>(address, httpContent, a => a));
 
     public static Free<HttpRestLang, HttpResponseMessage> HttpPut(string address, HttpContent httpContent)
         => Free<HttpRestLang>.LiftF(
-            new PutCommand<HttpResponseMessage>(address, httpContent, a => a)).To();
+            new PutCommand<HttpResponseMessage>(address, httpContent, a => a));
 
     public static Free<HttpRestLang, HttpResponseMessage> HttpDelete(string address)
         => Free<HttpRestLang>.LiftF(
-            new DeleteCommand<HttpResponseMessage>(address, a => a)).To();
+            new DeleteCommand<HttpResponseMessage>(address, a => a));
     
 }
