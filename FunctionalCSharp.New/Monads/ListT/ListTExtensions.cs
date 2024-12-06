@@ -43,4 +43,8 @@ public static class ListTExtensions
     public static IKind<TMonad, TResult> Fold<T, TResult, TMonad>(this IKind<ListT<TMonad>, T> source, TResult identity,
         Func<TResult, T, IKind<TMonad, TResult>> folder) where TMonad : IMonad<TMonad> =>
         ListT<TMonad>.Fold(source, identity, folder);
+
+    public static IKind<TMonad, (List<T>, ListT<TMonad, T>)> SplitAt<T, TMonad>(this IKind<ListT<TMonad>, T> source,
+        int index) where TMonad : IMonad<TMonad>
+        => ListT<TMonad>.SplitAt(source, index);
 }

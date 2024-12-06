@@ -47,11 +47,25 @@ public class Test
         // async.To().Run();
 
         var listT =
-            from a in ListT<Async>.Repeat(5).Take(5)
-            select Log(a);
-        var fold = listT.Fold(0,(a,b) => Async.Pure(a + b));
-        Console.WriteLine(fold.To().Run());
+            from a in ListT<Async>.Repeat(5).Take(10)
+            select a;
+
+        var async = ListT<Async>.SplitAt(listT,15).To();
+        var (list, rest) = async.Run();
+
+        list.SourceList.ToList().ForEach(Console.WriteLine);
         
+        var z =
+            from a in rest
+            select Log(a);
+        Console.WriteLine();
+        z.RunListT.To().Run();
+
+
+        
+        // var fold = listT.Fold(0,(a,b) => Async.Pure(a + b));
+        // Console.WriteLine(fold.To().Run());
+
 
 
         // var traverse = List.Traverse(list, Some<int>.Of);

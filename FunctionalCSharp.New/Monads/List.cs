@@ -27,8 +27,11 @@ public abstract class List : IMonadPlus<List>, ITraversable<List>, IMonoid<List>
 
     public static IKind<List, T> Pure<T>(T value) => new List<T>(Enumerable.Repeat(value, 1));
 
+    public static List<T> Prepend<T>(T item, IKind<List, T> list) =>
+        Append(Pure(item), list).To();
+
     public static IKind<List, T> Append<T>(IKind<List, T> a, IKind<List, T> b) =>
-        new List<T>(a.To().SourceList.Union(b.To().SourceList));
+        new List<T>(a.To().SourceList.Concat(b.To().SourceList));
 
     public static IKind<List, T> Empty<T>() => new List<T>(Enumerable.Empty<T>());
 
@@ -71,6 +74,8 @@ public abstract class List : IMonadPlus<List>, ITraversable<List>, IMonoid<List>
 
 public static class ListExt
 {
+    public static List<T> Prepend<T>(this IKind<List, T> list, T item) =>
+        List.Prepend(item, list);
     public static List<T> To<T>(this IKind<List, T> list) => (List<T>)list;
 
     public static List<Z> SelectMany<T, V, Z>(this List<T> list, Func<T, List<V>> binder,

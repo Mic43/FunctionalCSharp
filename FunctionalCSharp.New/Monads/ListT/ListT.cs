@@ -167,7 +167,22 @@ public abstract class ListT<TMonad> : IMonadPlus<ListT<TMonad>>, IMonadTransform
         }));
     }
 
-    // fold :: (Monad m) => (b -> a -> m b) -> b -> ListT m a -> m b
+    public static IKind<TMonad, (List<T>, ListT<TMonad, T>)> SplitAt<T>(IKind<ListT<TMonad>, T> source, int index)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(index);
+
+        var next = source.To().Next;
+        return TMonad.Bind(next, step => step switch
+        {
+            Cons<TMonad, T> (var value, var rest) => index > 0
+                ? TMonad.Map(SplitAt(rest, index - 1),
+                    tuple => tuple with { Item1 = tuple.Item1.Prepend(value) })
+                : TMonad.Pure((List.Pure(value).To(), rest)),
+            Nil<TMonad> _ => TMonad.Pure((List.Empty<T>().To(), Empty<T>().To())),
+            _ => throw new ArgumentException("step")
+        });
+    }
+
     public static IKind<TMonad, TResult> Fold<T, TResult>(IKind<ListT<TMonad>, T> source, TResult identity,
         Func<TResult, T, IKind<TMonad, TResult>> folder)
     {
@@ -176,8 +191,8 @@ public abstract class ListT<TMonad> : IMonadPlus<ListT<TMonad>>, IMonadTransform
             var next = source.To().Next;
             return TMonad.Bind(next, step => step switch
             {
-                Cons<TMonad, T>(var value, var rest) => 
-                    FoldInner(rest,TMonad.Bind(acc,res => folder(res,value))),
+                Cons<TMonad, T>(var value, var rest) =>
+                    FoldInner(rest, TMonad.Bind(acc, res => folder(res, value))),
                 Nil<TMonad> _ => acc,
                 _ => throw new ArgumentOutOfRangeException(nameof(step))
             });
