@@ -31,11 +31,48 @@ public abstract class Stream<TFunctor, TMonad> : IMonad<Stream<TFunctor, TMonad>
     public static IKind<Stream<TFunctor, TMonad>, T> Join<T>(
         IKind<Stream<TFunctor, TMonad>, IKind<Stream<TFunctor, TMonad>, T>> monad)
         => IMonad<Stream<TFunctor, TMonad>>.Join(monad);
-    
+
     public static IKind<Stream<TFunctor, TMonad>, T> Pure<T>(T value) => new Return<TFunctor, TMonad, T>(value);
 
     public static IKind<Stream<TFunctor, TMonad>, T> Lift<T>(IKind<TMonad, T> monad) =>
-        new Effect<TFunctor, TMonad, T>(
+        Effect(
             from t in monad
-            select Pure(t).To());
+            select Pure(t)
+        );
+
+    public static Stream<TFunctor, TMonad, T> Yields<T>(IKind<TFunctor, T> functor) =>
+        Wrap(TFunctor.Map(functor, Pure));
+
+    /// <summary>
+    /// Wraps an effect and returns a stream
+    /// </summary>
+    /// <param name="monad"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public static Stream<TFunctor, TMonad, T> Effect<T>(
+        IKind<TMonad, IKind<Stream<TFunctor, TMonad>, T>> monad) =>
+        new Effect<TFunctor, TMonad, T>(TMonad.Map(monad, s => s.To()));
+
+    public static Stream<TFunctor, TMonad, T> Wrap<T>(
+        IKind<TFunctor, IKind<Stream<TFunctor, TMonad>, T>> functor) =>
+        new Step<TFunctor, TMonad, T>(TFunctor.Map(functor, s => s.To()));
+
+    /// <summary>
+    ///  Repeat a functorial layer (a \"command\" or \"instruction\") forever.
+    /// </summary>
+    /// <param name="functor"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public static Stream<TFunctor, TMonad, T> Repeats<T>(IKind<TFunctor, Unit> functor)
+    {
+        return new Effect<TFunctor, TMonad, T>(
+            TMonad.Pure(
+                Stream<TFunctor, TMonad, T>.Step(TFunctor.Map(functor, _ => Repeats<T>(functor)))));
+    }
 }
+
+// abstract class StreamA<TApplicative, TMonad> : Stream<TApplicative, TMonad> where TMonad : IMonad<TMonad>
+//     where
+//     TApplicative : IApplicative<TApplicative>
+// {
+// }
