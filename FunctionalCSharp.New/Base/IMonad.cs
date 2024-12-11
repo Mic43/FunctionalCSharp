@@ -14,5 +14,15 @@ public interface IMonad<TMonad> : IApplicative<TMonad> where TMonad : IMonad<TMo
     public static abstract IKind<TMonad, V> Bind<T, V>(IKind<TMonad, T> monad, Func<T, IKind<TMonad, V>> fun);
 }
 
-public interface IMonadPlus<TMonad> : IMonad<TMonad>, IAlternative<TMonad>
-    where TMonad : IMonad<TMonad>, IAlternative<TMonad>;
+public static class MonadExt
+{
+    public static IKind<TMonad, Z> SelectMany<TMonad, T, V, Z>(this IKind<TMonad, T> monad,
+        Func<T, IKind<TMonad, V>> binder,
+        Func<T, V, Z> projection) where TMonad : IMonad<TMonad> =>
+        TMonad.Bind(monad,
+            t => binder(t).Select(v => projection(t, v)));
+
+    public static IKind<TMonad, V> Select<TMonad, T, V>(this IKind<TMonad, T> monad, Func<T, V> mapper)
+        where TMonad : IMonad<TMonad> =>
+        TMonad.Map(monad, mapper);
+}

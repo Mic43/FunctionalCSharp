@@ -167,6 +167,14 @@ public abstract class ListT<TMonad> : IMonadPlus<ListT<TMonad>>, IMonadTransform
         }));
     }
 
+    /// <summary>
+    /// Execute, consuming elements up the specified index(inclusive) and returning the remainder stream.
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="index"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
     public static IKind<TMonad, (List<T>, ListT<TMonad, T>)> SplitAt<T>(IKind<ListT<TMonad>, T> source, int index)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(index);

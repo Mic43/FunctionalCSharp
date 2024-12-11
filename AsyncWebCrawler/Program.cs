@@ -93,19 +93,27 @@ ListT<Async, (string, string)> Crawl(string url)
 }
 
 var listT =
-    from c in CrawlUntilError("http://news.bing.com")
+    from c in Crawl("http://news.bing.com")
     where c.Item1.Contains(".microsoft.com")
     select Log(c);
 
-// listT.RunListT.To().Run();
-
-switch (listT.RunListT.To().RunResultT.To().Run())
+void ChunkBy(ListT<Async, (string, string)> asyncSeq,int index)
 {
-    case Error<Unit, Exception>(var errorValue):
-        Console.WriteLine(errorValue);
-        break;
-    case Ok<Unit, Exception> ok:
-        break;
-    default:
-        throw new ArgumentOutOfRangeException();
+    var (_, rest) = asyncSeq.SplitAt(index).To().Run();
+    Console.WriteLine("Continue? (Y/N)");
+    if (Console.ReadLine()?.ToLower() == "y") 
+        ChunkBy(rest,index);
 }
+
+ChunkBy(listT,10);
+
+// switch (listT.RunListT.To().RunResultT.To().Run())
+// {
+//     case Error<Unit, Exception>(var errorValue):
+//         Console.WriteLine(errorValue);
+//         break;
+//     case Ok<Unit, Exception> ok:
+//         break;
+//     default:
+//         throw new ArgumentOutOfRangeException();
+// }
