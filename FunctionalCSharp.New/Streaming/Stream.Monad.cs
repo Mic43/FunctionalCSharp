@@ -1,4 +1,5 @@
 using FunctionalCSharp.New.Base;
+using FunctionalCSharp.New.Monads;
 
 namespace FunctionalCSharp.New.Streaming;
 
@@ -69,10 +70,55 @@ public abstract class Stream<TFunctor, TMonad> : IMonad<Stream<TFunctor, TMonad>
             TMonad.Pure(
                 Stream<TFunctor, TMonad, T>.Step(TFunctor.Map(functor, _ => Repeats<T>(functor)))));
     }
+
+    // public static Stream<TFunctor, TMonad, T> RepeatsM<T>(IKind<TMonad, IKind<TFunctor,Unit>> monad)
+    // {
+    //     return new Effect<TFunctor, TMonad, T>(
+    //         from functor in monad
+    //         select   TMonad.Pure(
+    //              Stream<TFunctor, TMonad, T>.Step(TFunctor.Map(functor, _ => RepeatsM<T>(functor))))
+    //         );
+    //
+    // }
+    public static IKind<TMonad, Result<IKind<TFunctor, Stream<TFunctor, TMonad, T>>, T>> Inspect<T>(
+        IKind<Stream<TFunctor, TMonad>, T> stream)
+    {
+        return stream.To() switch
+        {
+            Effect<TFunctor, TMonad, T>(var monad) => TMonad.Bind(monad, Inspect),
+            Return<TFunctor, TMonad, T>(var value) => TMonad.Pure(
+                Result<IKind<TFunctor, Stream<TFunctor, TMonad, T>>, T>.Error(value)),
+            Step<TFunctor, TMonad, T>(var functor) => TMonad.Pure(Result<T>.Pure(functor).To()),
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+
+    // splitsAt :: (Monad m, Functor f) => Int -> Stream f m r -> Stream f m (Stream f m r)
+    public static Stream<TFunctor, TMonad, Stream<TFunctor, TMonad, T>> SplitsAt<T>(int count,
+        IKind<Stream<TFunctor, TMonad>, T> stream)
+    {
+        if (count == 0)
+        {
+            return new Return<TFunctor, TMonad, Stream<TFunctor, TMonad, T>>(stream.To());
+        }
+
+        return stream.To() switch
+        {
+            Effect<TFunctor, TMonad, T>(var monad) => new Effect<TFunctor, TMonad, Stream<TFunctor, TMonad, T>>(
+                from s in monad select SplitsAt(count - 1, s)),
+            Return<TFunctor, TMonad, T> @return => new Return<TFunctor, TMonad, Stream<TFunctor, TMonad, T>>(@return),
+            Step<TFunctor, TMonad, T>(var functor) => new Step<TFunctor, TMonad, Stream<TFunctor, TMonad, T>>(
+                TFunctor.Map(functor, f => SplitsAt(count - 1, f))),
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
 }
 
-// abstract class StreamA<TApplicative, TMonad> : Stream<TApplicative, TMonad> where TMonad : IMonad<TMonad>
-//     where
-//     TApplicative : IApplicative<TApplicative>
-// {
-// }
+public abstract class StreamA<TApplicative, TMonad>
+    where TMonad : IMonad<TMonad>
+    where TApplicative : IApplicative<TApplicative>
+{
+    public static void Z<T>(IKind<Stream<TApplicative, TMonad>, T> z)
+    {
+    }
+}
